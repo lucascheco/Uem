@@ -12,26 +12,27 @@
 #include <string.h>
 
 typedef char *NOME;
-typedef unsigned int CEP;
 
 int input(char *str, int size);
 
 int main()
 {
     NOME primeiro_Nome, sobrenome;
-    NOME endereco, cidade, estado;
-    CEP  cep;
+    NOME endereco, cidade, estado, cep;
+    NOME buffer;
 
-    int   comprimento;
+    int   comprimento, comprimeto_Registro;
     FILE *NOME_ARQ;
 
-    primeiro_Nome      = (char *)realloc(NULL, 30 * sizeof(char));
-    sobrenome          = (char *)realloc(NULL, 30 * sizeof(char));
-    endereco           = (char *)realloc(NULL, 30 * sizeof(char));
-    cidade             = (char *)realloc(NULL, 30 * sizeof(char));
-    estado             = (char *)realloc(NULL, 30 * sizeof(char));
+    primeiro_Nome      = (char *)realloc(NULL, 30   * sizeof(char));
+    sobrenome          = (char *)realloc(NULL, 30   * sizeof(char));
+    endereco           = (char *)realloc(NULL, 30   * sizeof(char));
+    cidade             = (char *)realloc(NULL, 30   * sizeof(char));
+    estado             = (char *)realloc(NULL, 30   * sizeof(char));
+    cep                = (char *)realloc(NULL, 30   * sizeof(char));
+    buffer             = (char *)realloc(NULL, 180  * sizeof(char));
 
-    if((NOME_ARQ = fopen("SAIDA.txt", "w")) == NULL)
+    if((NOME_ARQ = fopen("SAIDA2.txt", "wb")) == NULL)
     {
         fprintf(stderr, "Erro ao abrir ou criar o arquivo para escrita.\n");
         exit(1);
@@ -43,6 +44,10 @@ int main()
 
     while (comprimento > 0)
     {
+        buffer[0] = '\0';
+        strcat(buffer, sobrenome);
+        strcat(buffer, "|");
+
         fprintf(stdout, "Digite o primeiro nome:\n");
         input(primeiro_Nome, 30);
 
@@ -56,15 +61,23 @@ int main()
         input(estado, 30);
 
         fprintf(stdout, "Digite o CEP:\n");
-        fscanf(stdin, "%d", &cep);
-        getchar();
+        input(cep, 30);
         
-        fprintf(NOME_ARQ, "%s|", sobrenome);
-        fprintf(NOME_ARQ, "%s|", primeiro_Nome);
-        fprintf(NOME_ARQ, "%s|", endereco);
-        fprintf(NOME_ARQ, "%s|", cidade);
-        fprintf(NOME_ARQ, "%s|", estado);
-        fprintf(NOME_ARQ, "%d|", cep);
+        strcat(buffer, primeiro_Nome);
+        strcat(buffer, "|");
+        strcat(buffer, endereco);
+        strcat(buffer, "|");
+        strcat(buffer, cidade);
+        strcat(buffer, "|");
+        strcat(buffer, estado);
+        strcat(buffer, "|");
+        strcat(buffer, cep);
+        strcat(buffer, "|");
+
+        comprimeto_Registro = strlen(buffer);
+
+        fwrite(&comprimeto_Registro, sizeof(int), 1, NOME_ARQ);
+        fwrite(buffer, comprimeto_Registro, 1, NOME_ARQ);
 
         fprintf(stdout, "Digite o sobrenome:\n");
         comprimento = input(sobrenome, 30);
