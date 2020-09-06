@@ -25,11 +25,11 @@ int main()
     int   comprimento;
     FILE *NOME_ARQ;
 
-    primeiro_Nome      = (char *)realloc(NULL, 30 * sizeof(char));
-    sobrenome          = (char *)realloc(NULL, 30 * sizeof(char));
-    endereco           = (char *)realloc(NULL, 30 * sizeof(char));
-    cidade             = (char *)realloc(NULL, 30 * sizeof(char));
-    estado             = (char *)realloc(NULL, 30 * sizeof(char));
+    primeiro_Nome = (char *)realloc(NULL, 30 * sizeof(char));
+    sobrenome     = (char *)realloc(NULL, 30 * sizeof(char));
+    endereco      = (char *)realloc(NULL, 30 * sizeof(char));
+    cidade        = (char *)realloc(NULL, 30 * sizeof(char));
+    estado        = (char *)realloc(NULL, 30 * sizeof(char));
 
     if((NOME_ARQ = fopen("SAIDA.txt", "w")) == NULL)
     {

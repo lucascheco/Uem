@@ -16,7 +16,7 @@ int le_campo(FILE *arq, char *str);
 int main()
 {
     FILE *NOME_ARQ;
-    int comprimento_campo, i = 1;
+    int   comprimento_campo, i = 1;
 
     char *str = (char *)malloc(30 * sizeof(char));
 
