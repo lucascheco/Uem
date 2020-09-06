@@ -24,17 +24,17 @@ int main()
     int   comprimento, comprimeto_Registro;
     FILE *NOME_ARQ;
 
-    primeiro_Nome      = (char *)realloc(NULL, 30   * sizeof(char));
-    sobrenome          = (char *)realloc(NULL, 30   * sizeof(char));
-    endereco           = (char *)realloc(NULL, 30   * sizeof(char));
-    cidade             = (char *)realloc(NULL, 30   * sizeof(char));
-    estado             = (char *)realloc(NULL, 30   * sizeof(char));
-    cep                = (char *)realloc(NULL, 30   * sizeof(char));
-    buffer             = (char *)realloc(NULL, 180  * sizeof(char));
+    primeiro_Nome = (char *)realloc(NULL, 30  * sizeof(char));
+    sobrenome     = (char *)realloc(NULL, 30  * sizeof(char));
+    endereco      = (char *)realloc(NULL, 30  * sizeof(char));
+    cidade        = (char *)realloc(NULL, 30  * sizeof(char));
+    estado        = (char *)realloc(NULL, 30  * sizeof(char));
+    cep           = (char *)realloc(NULL, 30  * sizeof(char));
+    buffer        = (char *)realloc(NULL, 180 * sizeof(char));
 
     if((NOME_ARQ = fopen("SAIDA2.txt", "wb")) == NULL)
     {
-        fprintf(stderr, "Erro ao abrir ou criar o arquivo para escrita.\n");
+        fprintf(stderr, "Erro ao abrir ou criar o arquivo binário para escrita.\n");
         exit(1);
     }
 
@@ -44,7 +44,6 @@ int main()
 
     while (comprimento > 0)
     {
-        buffer[0] = '\0';
         strcat(buffer, sobrenome);
         strcat(buffer, "|");
 

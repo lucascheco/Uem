@@ -16,7 +16,8 @@ int le_registro(FILE *arq, char *buffer);
 int main()
 {
     FILE *NOME_ARQ;
-    int comprimento_Registro, i = 1, j = 1;
+    int   comprimento_Registro, 
+          i = 1, j = 1;
 
     char *buffer = (char *)malloc(180 * sizeof(char));
     char *campo  = (char *)malloc(30  * sizeof(char));
@@ -29,26 +30,27 @@ int main()
 
     comprimento_Registro = le_registro(NOME_ARQ, buffer);
 
-    // while (comprimento_Registro > 0)
-    // {
-    //     campo = strtok(buffer, "|");
+    while (comprimento_Registro > 0)
+    {
+        i = 1;
+        campo = strtok(buffer, "|");
         
-    //     fprintf(stdout, "Registro #%d\n", j);
+        fprintf(stdout, "Registro #%d\n", j);
         
-    //     while (campo != NULL)
-    //     {
-    //         fprintf(stdout, "\tcampo #%d: %s\n", i, campo);
-    //         campo = strtok(NULL, "|");
-    //         i++;
-    //     }
+        while (campo != NULL)
+        {
+            fprintf(stdout, "\tcampo #%d: %s\n", i, campo);
+            campo = strtok(NULL, "|");
+            i++;
+        }
 
-    //     comprimento_Registro = le_registro(NOME_ARQ, buffer);
+        comprimento_Registro = le_registro(NOME_ARQ, buffer);
 
-    //     j++;
-    // }
+        j++;
+    }
 
-    // free(buffer);
-    // fclose(NOME_ARQ);
+    free(buffer);
+    fclose(NOME_ARQ);
 
     return 0;
 }
