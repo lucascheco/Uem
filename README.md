@@ -1,2 +1,2 @@
 # Uem
- Execirses from my CS course.
+ Exercises from my CS course.
