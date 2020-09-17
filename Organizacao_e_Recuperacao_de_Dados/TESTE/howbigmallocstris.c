@@ -7,7 +7,7 @@ int main()
 
     scanf("%s", str);
 
-    printf("%s", str);
+    printf("%s\n", str);
 
     return 0;
 }
