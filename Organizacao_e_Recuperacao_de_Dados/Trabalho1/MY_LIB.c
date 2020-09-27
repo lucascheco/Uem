@@ -19,3 +19,12 @@ int modo(Flag flag)
 
   }
 }
+
+int importaArq(FILE arq_source, FILE arq_destination)
+{
+  char c;
+  while ((c = fgetc(arq_source)) != EOF)
+  {
+    fwrite()
+  }
+}

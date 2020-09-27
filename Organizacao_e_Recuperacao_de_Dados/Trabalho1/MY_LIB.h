@@ -9,3 +9,5 @@ enum {PROGRAMA, MODO, ARQUIVO};
 enum {FLAGS, IMPORT, OPER};
 
 int modo(Flag flag);
+
+int importaArq(FILE arq_source, FILE arq_destination);
