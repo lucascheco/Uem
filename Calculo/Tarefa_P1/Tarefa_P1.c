@@ -1,5 +1,6 @@
 /*
     * Author:       Lucas Matheus Silva Pacheco.
+    * RA:           112-686.
     * Description:  Alguns exercícios de Cálculo(I) - James Stewart (2.6).   
 */
 #include <stdio.h>
