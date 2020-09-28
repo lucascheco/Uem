@@ -4,11 +4,11 @@
 
 #include "MY_LIB.h"
 
-int modo(Flag flag)
+int modo(Flag flag, FILE *arq_source, FILE *arq_destination)
 {
   if (flag == IMPORT)
   {
-
+    importaArq(arq_source, arq_destination);
   }
   else if(flag == OPER)
   {
@@ -20,11 +20,15 @@ int modo(Flag flag)
   }
 }
 
-int importaArq(FILE arq_source, FILE arq_destination)
+int importaArq(FILE *arq_source, FILE *arq_destination)
 {
   char c;
+  int  cont = 0;
   while ((c = fgetc(arq_source)) != EOF)
   {
-    fwrite()
+    fwrite(&c, sizeof(char), 1,arq_destination);
+    cont++;
   }
+
+  return cont;
 }

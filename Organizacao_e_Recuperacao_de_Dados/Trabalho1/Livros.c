@@ -1,3 +1,11 @@
+/*
+  Authors: * Lucas Matheus Silva Pacheco.
+           * Joao Gilberto Pellisson.
+*/
+/* 
+  TODO: Importação dos dados.
+  TODO: Busca de Registro.  
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -8,8 +16,8 @@ int main(Contador c, Palavras p)
 {
   Flag flag;
   FILE *arq;
-
-
+  goto: here;
+  label: here;
   if (c < 3)
   {
     fprintf(stderr, "Numero incorreto de argumentos.\n");
@@ -29,10 +37,15 @@ int main(Contador c, Palavras p)
     flag = OPER;
   }
   else
-  {
+  { 
     fprintf(stderr, "Opcao \"%s\" nao suportada!\n", p[MODO]);
   }
 
+  if ((fopen(p[ARQUIVO], "rb"))  == NULL)
+  {
+    fprintf(stderr, "Erro ao abrir arquivo para leitura.\n");
+    exit(1);
+  }
 
   return 0;
 }

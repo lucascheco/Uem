@@ -10,4 +10,4 @@ enum {FLAGS, IMPORT, OPER};
 
 int modo(Flag flag);
 
-int importaArq(FILE arq_source, FILE arq_destination);
+int importaArq(FILE *arq_source, FILE *arq_destination);
