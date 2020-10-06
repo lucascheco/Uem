@@ -33,7 +33,7 @@ entity and is
         e1, e2, e3  : in bit;
         saida       : out bit
     );
-end not;
+end and;
 
 architecture logica of and is
     begin
@@ -49,7 +49,7 @@ entity or is
         e1, e2, e3, e4  : in bit;
         saida           : out bit
     );
-end not;
+end or;
 
 architecture logica of or is
     begin
