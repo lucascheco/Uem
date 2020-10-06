@@ -14,7 +14,8 @@ int input(char*, int);
 
 short leia_reg(FILE*, char*, int);
 
-int main(){
+int main()
+{
 
     FILE *entrada;
     int   achou;
@@ -38,7 +39,7 @@ int main(){
     printf("\n\nDigite o SOBRENOME a ser buscado: "); // get search key
     input(sobrenome_busca, TAM_STR);
     
-	achou = FALSE;
+	achou    = FALSE;
 	comp_reg = leia_reg(entrada, buffer, TAM_MAX_REG);
 	
     while (!achou && comp_reg > 0)

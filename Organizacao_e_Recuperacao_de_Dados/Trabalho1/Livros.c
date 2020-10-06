@@ -7,6 +7,7 @@
   TODO: Busca de Registro por indentificador.  
   TODO: Inserção de novo registro.
   TODO: Remoção de Registro.
+  Obs: Nao posso importar tudo como char, importar registro com cada campo no seu respectivo tipo.
 */
 #include <stdio.h>
 #include <stdlib.h>
