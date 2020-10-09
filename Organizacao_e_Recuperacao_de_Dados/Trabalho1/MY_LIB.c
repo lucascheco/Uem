@@ -8,7 +8,7 @@ int modo(Flag flag, FILE *arq_source, FILE *arq_destination)
 {
   if (flag == IMPORT)
   {
-    importaArq(arq_source, arq_destination);
+    importaArq_LED(arq_source, arq_destination);
     return flag;
   }
   else if(flag == OPER)
@@ -21,7 +21,7 @@ int modo(Flag flag, FILE *arq_source, FILE *arq_destination)
   }
 }
 
-int importaArq(FILE *arq_source, FILE *arq_destination)
+int importaArq_LED(FILE *arq_source, FILE *arq_destination)
 {
   char  c;            /* Para leitura de um caractere. */
   char *registro;     /* Tipo o buffer, uma string que guarda todos caracteres de um registro. */
@@ -76,3 +76,5 @@ int importaArq(FILE *arq_source, FILE *arq_destination)
   free(registro);
   return cont;
 }
+
+int 
