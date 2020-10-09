@@ -55,7 +55,7 @@ int main()
     return 0;
 }
 
-short leia_reg(FILE *entrada, char * buffer, int tam)
+short leia_reg(FILE *entrada, char *buffer, int tam)
 {
     short comp_reg;
 

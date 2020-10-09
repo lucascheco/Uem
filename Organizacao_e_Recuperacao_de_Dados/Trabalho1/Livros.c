@@ -3,7 +3,7 @@
            * Joao Gilberto Pellisson.
 */
 /* 
-  TODO: Importação dos dados.
+  DONE: Importação dos dados. 
   TODO: Busca de Registro por indentificador.  
   TODO: Inserção de novo registro.
   TODO: Remoção de Registro.
