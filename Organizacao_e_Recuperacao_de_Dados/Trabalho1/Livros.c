@@ -15,11 +15,12 @@
 
 #include "MY_LIB.h"
 
-int main(Contador c, Palavras p)
+int main(Contador c, Argumentos p)
 {
   Flag flag;
   FILE *arq_s, *arq_d, *arq_oper;
-  
+
+/* Error handling */
   if (c < 3)
   {
     fprintf(stderr, "Numero incorreto de argumentos.\n");
@@ -27,6 +28,8 @@ int main(Contador c, Palavras p)
     fprintf(stderr, "$ %s (-i|-e) nome_arquivo\n", p[PROGRAMA]);
     exit(1);
   }
+
+/*------------------------------------------------------------------------------------------------*/
   /* Captura se é importação ou operações. */
   if (!strcmp(p[MODO], "-i"))
   {
@@ -41,36 +44,65 @@ int main(Contador c, Palavras p)
   else
   { 
     fprintf(stderr, "Opcao \"%s\" nao suportada!\n", p[MODO]);
-  }
-
-  /* Abre o arquivo de registros de livros. */
-  if ((arq_s = fopen(p[ARQUIVO], "rb"))  == NULL)
-  {
-    fprintf(stderr, "Erro ao abrir arquivo para leitura.\n");
     exit(1);
   }
 
-  /* Copia o arquivo de livros mas organizado em LED. */
-  if ((arq_d = fopen("livros.dat", "wb"))  == NULL)
+/*------------------------------------------------------------------------------------------------*/
+/* Seleciona o modo.                                                                              */
+/*------------------------------------------------------------------------------------------------*/
+/* Modo importação. */
+  if(flag == IMPORT)
   {
-    fprintf(stderr, "Erro ao abrir arquivo para escrita.\n");
-    exit(1);
+    /* Abre o arquivo de registros de livros. */
+    if ((arq_s = fopen(p[ARQUIVO], "rb")) == NULL)
+    {
+      fprintf(stderr, "Erro ao abrir arquivo para leitura.\n");
+      exit(1);
+    }
+    
+    /* Para copiar o arquivo de livros, mas organizado em LED, ou abre um ja existente. */
+    if ((arq_d = fopen("livros.dat", "wb")) == NULL)
+    {
+      fprintf(stderr, "Erro ao abrir arquivo para escrita.\n");
+      exit(1);
+    }
+
+    if(!modo(flag, arq_s, arq_d))
+    {
+      fprintf(stderr, "Erro ao executar a importacao para um arquivo \".dat.\"\n");
+      exit(1);
+    }
+
+    fclose(arq_s);
+    fclose(arq_d);
   }
 
-  if ((arq_oper = fopen(p[ARQUIVO], "rb"))  == NULL)
+/* Modo Operação. */
+  if(flag == OPER)
   {
-    fprintf(stderr, "Erro ao abrir arquivo para leitura.\n");
-    exit(1);
+    /* Abre o arquivo de operações */
+    if ((arq_oper = fopen(p[ARQUIVO], "rb")) == NULL)
+    {
+      fprintf(stderr, "Erro ao abrir arquivo para leitura.\n");
+      exit(1);
+    }
+
+    /* Para copiar o arquivo de livros, mas organizado em LED, ou abre um ja existente. */
+    if ((arq_d = fopen("livros.dat", "rb")) == NULL)
+    {
+      fprintf(stderr, "Erro ao abrir arquivo para leitura.\n");
+      exit(1);
+    }
+
+    if(!modo(flag, arq_s, arq_oper))
+    {
+      fprintf(stderr, "Erro ao executar a importacao para um arquivo \".dat.\"\n");
+      exit(1);
+    }
+
+    fclose(arq_d);
+    fclose(arq_oper);
   }
 
-  if(!modo(flag, arq_s, arq_d) || !(flag == IMPORT))
-  {
-    fprintf(stderr, "Erro ao executar a importacao para um arquivo \".dat.\"\n");
-    exit(1);
-  }
-
-
-  fclose(arq_s);
-  fclose(arq_d);
   return 0;
 }
