@@ -15,9 +15,14 @@ int importaArq_LED(FILE *arq_source, FILE *arq_destination);
 int importaArq_OPR(FILE *arq_source, FILE *arq_oper);
 
 
-char *busca(FILE *arq_oper);
+char *le_Chave(FILE *arq_oper);
 
-int remove_();
+int busca(FILE *arq_source, int chaveBuscaInt);
+
+int remove_(FILE *arq_source, int chaveBuscaInt);
 
 int insere();
 
+void mostra_Reg(FILE *arq_source, int tam_Reg);
+
+int leLED(FILE *arq_source);

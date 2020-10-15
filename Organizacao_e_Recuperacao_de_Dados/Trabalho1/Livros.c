@@ -72,9 +72,6 @@ int main(Contador c, Argumentos p)
       fprintf(stderr, "Erro ao executar a importacao para um arquivo \".dat.\"\n");
       exit(1);
     }
-
-    fclose(arq_s);
-    fclose(arq_d);
   }
 
 /* Modo Operação. */
@@ -88,7 +85,7 @@ int main(Contador c, Argumentos p)
     }
 
     /* Para copiar o arquivo de livros, mas organizado em LED, ou abre um ja existente. */
-    if ((arq_d = fopen("livros.dat", "rb")) == NULL)
+    if ((arq_s = fopen("livros.dat", "r+b")) == NULL)
     {
       fprintf(stderr, "Erro ao abrir arquivo para leitura.\n");
       exit(1);
@@ -99,10 +96,11 @@ int main(Contador c, Argumentos p)
       fprintf(stderr, "Erro ao executar a importacao para um arquivo \".dat.\"\n");
       exit(1);
     }
-
-    fclose(arq_d);
-    fclose(arq_oper);
+      fclose(arq_oper);
   }
 
+  fclose(arq_s);
+
+  fclose(arq_d);
   return 0;
 }

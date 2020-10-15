@@ -28,7 +28,7 @@ int importaArq_LED(FILE *arq_source, FILE *arq_destination)
   char *registro;     /* Tipo o buffer, uma string que guarda todos caracteres de um registro. */
   char *reallocError; /* Para error handling da função realloc. */
   short tamanho_Reg;  /* Tamanho do Registro que fica no comeco de cada um. */
-  int   led = -1;     /* A led no no cabaçalho do arquivo. */
+  int   LED = -1;     /* A led no no cabaçalho do arquivo. */
   int   cont = 0;     /* Será usado para aumentar blocos de memória no heap, conta quantos caracteres tem em cada registro.*/
   int   contPipe = 0; /* Variável para contar os pipes, vou importar de uma forma diferente. */ 
   
@@ -36,7 +36,7 @@ int importaArq_LED(FILE *arq_source, FILE *arq_destination)
   registro = (char *)malloc(sizeof(char));
   
   /* Coloca a led no começo do arquivo. */
-  fwrite(&led, sizeof(int), 1, arq_destination);
+  fwrite(&LED, sizeof(int), 1, arq_destination);
 
   while ((c = fgetc(arq_source)) != EOF)
   { 
@@ -48,14 +48,13 @@ int importaArq_LED(FILE *arq_source, FILE *arq_destination)
       {
         registro[cont] = c;
 
-        tamanho_Reg = (short)strlen(registro);
+        tamanho_Reg = (short)cont + 1;
 
         fwrite(&tamanho_Reg, sizeof(short), 1, arq_destination);
         
         fwrite(registro, sizeof(char), tamanho_Reg, arq_destination);
 
         /* Zeramos as variaveis para leitura do próximo registro. */
-        free(registro);
         
         registro = (char *)malloc(sizeof(char));
 
@@ -85,97 +84,44 @@ int importaArq_OPR(FILE *arq_source, FILE *arq_oper)
   char *chaveBuscaChar;
   int   chaveBuscaInt;  /* Transformei em int pra comparar com ==, sem usar a função strcmp */
 
-  int   LED;
-  short tam_Reg;
-  short byte_off;       /* Armazena o byte offset para ler o próximo registro. */
-
-  char *reallocError;
-  char  c1;
-  char *identificador = (char *)malloc(sizeof(char));
-  int   ide_;           /* Para transformar o identificador em int para comparacao com do arquivo de operacoes. */
-  int   cont = 0;
+  fprintf(stdout, "\n");
 
   while ((c = fgetc(arq_oper)) != EOF)
   {
+    /* Busca e printa a chave no stdout. */
     if (c == 'b')
     {
-      chaveBuscaChar = busca(arq_oper);
+      chaveBuscaChar = le_Chave(arq_oper);
       chaveBuscaInt  = atoi(chaveBuscaChar);
 
-      // fread(&LED, sizeof(int), 1, arq_source);
-
-      // while (1)
-      // {
-      //   fread(&tam_Reg, sizeof(short), 1, arq_source);
-      //   byte_off = tam_Reg;
-
-      //   while ((c1 = fgetc(arq_source)) != EOF) 
-      //   {
-      //     if (c1 == '|')
-      //       break;
-
-      //     identificador[cont++] = c1;
-
-      //     if ((reallocError = (char *)realloc(identificador, (cont + 1) * sizeof(char))) != NULL) /**/
-      //     {
-      //       identificador = reallocError;
-      //     }
-      //   }  
-
-      //   byte_off -= cont;
-
-      //   cont = 0; /* Pra reutilizar essa variável. */
-
-      //   if((ide_ = atoi(identificador)) == chaveBuscaInt)
-      //   {
-      //     fprintf(stdout, "\tCampo 1: %s\n", identificador);
-
-      //     while (cont < 6)
-      //     {
-      //       fprintf(stdout, "\tCampo %d:", cont + 2);
-
-      //       while ((c1 = fgetc(arq_source)) != '|')
-      //         fprintf(stdout, "%c", c1);
-
-      //       fprintf(stdout, "\n");
-
-      //       cont++;
-      //     }
-
-      //     break;
-      //   }
-      //   else
-      //   {
-      //     if (feof(arq_source))
-      //     {
-      //       fprintf(stdout, "Nao encontrado.\n");
-      //       break;
-      //     }
-
-      //     identificador = (char *)malloc(sizeof(char));
-          
-      //     fseek(arq_source, byte_off, SEEK_CUR);
-      //   }
-        
-      // }
-
-      printf("%d\n", chaveBuscaInt);
-      free(chaveBuscaChar);
-      // free(identificador);
-      free(reallocError);
-
+      busca(arq_source, chaveBuscaInt);
     }
+    
+    /* Remove o registro. */
     else if(c == 'r')
     {
-      /* Funcao remove */
+      chaveBuscaChar = le_Chave(arq_oper);
+      chaveBuscaInt  = atoi(chaveBuscaChar);
+      fprintf(stdout, "Remove\n %d\n", chaveBuscaInt);
 
+      remove_(arq_source, chaveBuscaInt);
+      fprintf(stdout, "Posicao: ofsset = %d bytes\n\n", leLED(arq_source));
     }
+    
+    /* Insere um novo registro. */
     else if(c == 'i')
     {
       /* Funcao insere */
+      fprintf(stdout, "Funcao insere.\n");
+      chaveBuscaChar = le_Chave(arq_oper);
+      
+      fprintf(stdout, "%s\n", chaveBuscaChar);
 
     }
   }
+
+  free(chaveBuscaChar);
+
   return 0;
 }
 
@@ -186,7 +132,7 @@ int importaArq_OPR(FILE *arq_source, FILE *arq_oper)
     * Insere
 
  */
-char *busca(FILE *arq_oper)
+char *le_Chave(FILE *arq_oper)
 {
   int   cont = 0;
   char *chave = (char *)malloc(sizeof(char));
@@ -211,12 +157,225 @@ char *busca(FILE *arq_oper)
   return chave;
 }         
 
-int remove_()
+int busca(FILE *arq_source, int chaveBuscaInt)
 {
+  int   LED;
+  short tam_Reg = 0;
+  short byte_off = 0;       /* Armazena o byte offset para ler o próximo registro. */
 
+  char *reallocError;
+  char  c1;
+  char *identificador = (char *)malloc(sizeof(char));
+  int   ide_;           /* Para transformar o identificador em int para comparacao com do arquivo de operacoes. */
+  int   cont = 0;
+
+  fprintf(stdout, "*BUSCA* pelo registro de chave \"%d\"\n", chaveBuscaInt);
+        
+  fread(&LED, sizeof(int), 1, arq_source);  
+
+
+  while (1)
+  {
+    fread(&tam_Reg, sizeof(short), 1, arq_source);
+
+    while ((c1 = fgetc(arq_source)) != EOF) 
+    {
+      // if (c1 == '*')
+      // {
+      //   fseek(arq_source, tam_Reg, SEEK_CUR);
+      //   break;
+      // }
+
+      if (c1 == '|')
+        break;
+
+      identificador[cont++] = c1;
+
+      if ((reallocError = (char *)realloc(identificador, (cont + 1) * sizeof(char))) != NULL) /**/
+      {
+        identificador = reallocError;
+      }
+    }  
+
+    // if (c1 == '*')
+    // {
+    //   cont = 0;
+    //   identificador = (char *)malloc(sizeof(char));
+    //   continue;
+    // }
+
+    cont++;
+
+    // fprintf(stdout, "O identificador e %s e a chave e %d\n", identificador, chaveBuscaInt);
+
+    if((ide_ = atoi(identificador)) == chaveBuscaInt)
+    {
+      fseek(arq_source, -cont, SEEK_CUR); 
+
+      mostra_Reg(arq_source, tam_Reg);
+
+      cont = 0;
+
+      identificador = (char *)malloc(sizeof(char));
+      rewind(arq_source);
+      break;
+    }
+    else
+    {
+      if (c1 == EOF)
+      {
+        fprintf(stdout, "erro: registro nao encontrado!\n\n");
+        
+        cont = 0;
+        identificador = (char *)malloc(sizeof(char));
+        rewind(arq_source);
+        break;
+      }
+
+      identificador = (char *)malloc(sizeof(char));
+      fseek(arq_source, -cont, SEEK_CUR);   /* Retorna o seek cont bytes, pois é o tamanho do primeiro campo. */
+
+      fseek(arq_source, tam_Reg, SEEK_CUR); /* Avança o seek para a leitura do próximo registro. */
+      cont = 0;
+    }
+    
+  }
+  
+  free(reallocError);
+  free(identificador);
+
+  return 0;
+}
+
+int remove_(FILE *arq_source, int chaveBuscaInt)
+{
+  int   LED;
+  short tam_Reg = 0;
+  int   byte_off = 0;  
+
+  char *reallocError;
+  char  c1;
+  char *identificador = (char *)malloc(sizeof(char));
+  int   ide_;           /* Para transformar o identificador em int para comparacao com do arquivo de operacoes. */
+  int   cont = 0;
+
+  char remov = '*';
+
+  fprintf(stdout, "*REMOCAO* do registro de chave \"%d\"\n", chaveBuscaInt);
+        
+  fread(&LED, sizeof(int), 1, arq_source);  
+  byte_off += (int)sizeof(int);
+
+  while (1)
+  {
+    fread(&tam_Reg, sizeof(short), 1, arq_source);
+    byte_off += (int)tam_Reg;
+    byte_off += (int)sizeof(short);
+
+    while ((c1 = fgetc(arq_source)) != EOF) 
+    {
+      // if (c1 == '*')
+      // {
+      //   fseek(arq_source, tam_Reg , SEEK_CUR);
+      //   break;
+      // }
+
+      if (c1 == '|')
+        break;
+
+      identificador[cont++] = c1;
+
+      if ((reallocError = (char *)realloc(identificador, (cont + 1) * sizeof(char))) != NULL) /**/
+      {
+        identificador = reallocError;
+      }
+    }  
+    
+    // if (c1 == '*')
+    // {
+    //   fprintf(stdout, "\t\tRegistro Removido*****\n\n");
+    //   cont = 0;
+    //   identificador = (char *)malloc(sizeof(char));
+    //   continue;
+    // }
+
+    cont++;
+
+    if((ide_ = atoi(identificador)) == chaveBuscaInt)
+    {
+      fprintf(stdout, "Registro removido! (%d bytes)\n", tam_Reg);
+      fseek(arq_source, -cont, SEEK_CUR); 
+
+      fwrite(&remov,    sizeof(char), 1, arq_source);
+      fwrite(&LED,      sizeof(int),  1, arq_source);
+
+      cont = 0;
+
+      identificador = (char *)malloc(sizeof(char));
+      rewind(arq_source);
+      fwrite(&byte_off, sizeof(int),  1, arq_source);
+
+      byte_off = 0;
+      rewind(arq_source);
+      break;
+    }
+    else
+    {
+      if (c1 == EOF)
+      {
+        fprintf(stdout, "erro: registro nao encontrado!\n\n");
+        
+        cont = 0;
+        byte_off = 0;
+        identificador = (char *)malloc(sizeof(char));
+        rewind(arq_source);
+        break;
+      }
+
+      identificador = (char *)malloc(sizeof(char));
+      fseek(arq_source, -cont, SEEK_CUR);   /* Retorna o seek cont bytes, pois é o tamanho do primeiro campo. */
+
+      fseek(arq_source, tam_Reg, SEEK_CUR); /* Avança o seek para a leitura do próximo registro. */
+      cont = 0;
+    }
+    
+  }
+  
+  free(reallocError);
+  free(identificador);
+
+  return 0;
 }
 
 int insere()
 {
   
+}
+
+/*--------------------------------------------------------------------*/
+void mostra_Reg(FILE *arq_source, int tam_Reg)
+{
+  int cont = 0;
+  char c1;
+  fprintf(stdout, "===>\t\n");
+  while (cont < tam_Reg)
+  {
+    c1 = fgetc(arq_source);
+    fprintf(stdout, "%c", c1);
+    cont++;
+  }
+  fprintf(stdout, " (%d) bytes", tam_Reg);
+  fprintf(stdout, "\n===>");
+  fprintf(stdout, "\n\n\n");
+      
+}
+
+int leLED(FILE *arq_source)
+{
+  int LED;
+
+  fread(&LED, sizeof(int), 1, arq_source);
+  rewind(arq_source);
+
+  return LED;
 }
