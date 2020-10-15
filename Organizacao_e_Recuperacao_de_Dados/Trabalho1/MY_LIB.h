@@ -21,7 +21,7 @@ int busca(FILE *arq_source, int chaveBuscaInt);
 
 int remove_(FILE *arq_source, int chaveBuscaInt);
 
-int insere();
+int insere(FILE *arq_source, char *chaveBuscaChar);
 
 void mostra_Reg(FILE *arq_source, int tam_Reg);
 
