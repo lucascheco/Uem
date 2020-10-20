@@ -1,13 +1,12 @@
 /*
-  Authors: * Lucas Matheus Silva Pacheco.
-           * Joao Gilberto Pellisson.
+  Authors: * Lucas Matheus Silva Pacheco. RA:112686
+           * Joao Gilberto Pellisson.     RA:112684  
 */
 /* 
   DONE: Importação dos dados. 
-  TODO: Busca de Registro por indentificador.  
+  DONE: Busca de Registro por indentificador.  
   TODO: Inserção de novo registro.
-  TODO: Remoção de Registro.
-  Obs: Nao posso importar tudo como char, importar registro com cada campo no seu respectivo tipo.
+  DONE: Remoção de Registro.
 */
 #include <stdio.h>
 #include <stdlib.h>

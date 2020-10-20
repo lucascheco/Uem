@@ -13,6 +13,8 @@ r 145
 r 184
 r 230
 r 376
+r 66
+i 999|LP:AudioProgramming|Tech|Lucas Pacheco|5.0|690|2020/10/12|
 i 424|Queen of Air and Darkness|Fantasy|Cassandra Clare|4.36|912|2018/12/04|
 i 427|End of Watch|Mystery & Thriller|Stephen King|4.08|432|2016/06/07|
 i 459|Grey|Romance|E.L. James|3.79|576|2015/06/18|

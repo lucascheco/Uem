@@ -85,6 +85,11 @@ int importaArq_OPR(FILE *arq_source, FILE *arq_oper)
   int   chaveBuscaInt;  /* Transformei em int pra comparar com ==, sem usar a função strcmp */
   int   tam_insere_Reg;   /* Tamanho do registro a ser inserido. */
 
+  /* Para ler o identificador da inserção. */
+  char  c1;
+  char  ident[4];
+  int   cont = 0;
+
   fprintf(stdout, "\n");
 
   while ((c = fgetc(arq_oper)) != EOF)
@@ -118,7 +123,14 @@ int importaArq_OPR(FILE *arq_source, FILE *arq_oper)
       fprintf(stdout, "Funcao insere.\n");
       chaveBuscaChar = le_Chave(arq_oper); /* Nesse caso chaveBuscachar é o novo registro. */
       
-      fprintf(stdout, "*INSERCAO* do registro de chave\" \" (%ld bytes)\n", strlen(chaveBuscaChar));
+      while(chaveBuscaChar[cont] != '|')
+      {
+        ident[cont] = chaveBuscaChar[cont];
+        cont++;
+      }
+      ident[cont] = '\0';
+      cont = 0;
+      fprintf(stdout, "*INSERCAO* do registro de chave \"%s\" (%ld bytes)\n", ident, strlen(chaveBuscaChar));
       insere(arq_source, chaveBuscaChar);
     }
   }
@@ -127,6 +139,7 @@ int importaArq_OPR(FILE *arq_source, FILE *arq_oper)
     exit(1);
     
   free(chaveBuscaChar);
+
 
   return 0;
 }
@@ -362,91 +375,94 @@ int insere(FILE *arq_source, char *chaveBuscaChar)
   int   LED      = -2;
   int   prox_LED = -2;
   int   ante_LED = -2;
-  int   nova_LED;
+  int   cur_LED  = -2;
 
   short tam_Reg_Inserir = (short)strlen(chaveBuscaChar);
   short tam_Reg_Disponivel;
   short sobra = 0;
 
   char  remov = '*';
-  
-  fread(&LED, sizeof(int), 1, arq_source);
 
-  fseek(arq_source, LED - sizeof(int), SEEK_CUR); /* Vai para o primeiro espaco disponivel. */
+  fread(&cur_LED, sizeof(int), 1, arq_source);
 
-  prox_LED = LED;
+  ante_LED = cur_LED;
+
   while (1)
   {
-    ante_LED = prox_LED;
-
-    fread(&tam_Reg_Disponivel, sizeof(short), 1, arq_source);
-    fseek(arq_source, 1, SEEK_CUR);                 /* Pula o '*' .*/
-    fread(&prox_LED, sizeof(int), 1, arq_source);   /* Le o proximo byteoffset disponivel. */
-
-
-    if(tam_Reg_Disponivel >= tam_Reg_Inserir)
+    if (ante_LED != -1)
     {
-      sobra = tam_Reg_Disponivel - tam_Reg_Inserir - 2;
+      fseek(arq_source, ante_LED, SEEK_SET); /* Vai para o primeiro espaco disponivel. */
 
-      fseek(arq_source, -(sizeof(short) + sizeof(int) + sizeof(char)), SEEK_CUR); /* Retorna o seek para o comeco do registro. */
-      
+      fread(&tam_Reg_Disponivel, sizeof(short), 1, arq_source);
+      fseek(arq_source, 1, SEEK_CUR);                 /* Pula o '*' .*/
+      fread(&prox_LED, sizeof(int), 1, arq_source);   /* Le o proximo byteoffset disponivel. */
 
 
-      if (sobra > 50)
+      if(tam_Reg_Disponivel >= tam_Reg_Inserir) /* Maneja se o tamanho do ED é suficiente para inserção. */
       {
+        sobra = tam_Reg_Disponivel - tam_Reg_Inserir;
+
+        fseek(arq_source, -(sizeof(short) + sizeof(int) + sizeof(char)), SEEK_CUR); /* Retorna o seek para o comeco do registro. */
+        
+        /* Escrevemos o registro no arquivo. */
         fwrite(&tam_Reg_Inserir, sizeof(short), 1,               arq_source);
-        fwrite( chaveBuscaChar,  sizeof(char),  tam_Reg_Inserir, arq_source);
+        fwrite( chaveBuscaChar,  sizeof(char),  tam_Reg_Inserir, arq_source);  /* -1? */
 
-        fprintf(stdout, "Local: ofsset = %d\n", ante_LED);
-        fprintf(stdout, "Tamanho do espaço: %d\n", tam_Reg_Disponivel);
+        fprintf(stdout, "Local: ofsset = %d bytes\n", ante_LED);
+        fprintf(stdout, "Tamanho do espaço: %d bytes\n", tam_Reg_Disponivel);
         
-        fwrite(&sobra,    sizeof(short), 1, arq_source);
-        fwrite(&remov,    sizeof(char),  1, arq_source);
-        fwrite(&prox_LED, sizeof(int),   1, arq_source);
-        rewind(arq_source);
-        
-        nova_LED = LED + (int)tam_Reg_Inserir;
+        if (sobra > 50) /* Maneja a sobra. */
+        {
+          fwrite(&sobra,    sizeof(short), 1, arq_source);
+          fwrite(&remov,    sizeof(char),  1, arq_source);
+          fwrite(&prox_LED, sizeof(int),   1, arq_source);
+          rewind(arq_source);
+          
+          cur_LED = ante_LED + (int)tam_Reg_Inserir + (int)sizeof(short); /* A led no cabeçalho atual tem que ser o byteoffset da sobra. */
 
-        fwrite(&nova_LED, sizeof(int), 1, arq_source);
+          fwrite(&cur_LED, sizeof(int), 1, arq_source);
 
-        rewind(arq_source);
+          rewind(arq_source);
 
-        fprintf(stdout, "Tamanho da sobra: %d\n", sobra);
-        fprintf(stdout, "Offset da sobra: %d\n\n", ante_LED + tam_Reg_Inserir + 2);
+          fprintf(stdout, "Tamanho da sobra: %d bytes\n", sobra);
+          fprintf(stdout, "Offset da sobra: %d bytes\n\n", cur_LED);
+        }
+        else
+        {
+          cur_LED = prox_LED;
+          
+          rewind(arq_source);
+
+          fwrite(&cur_LED, sizeof(int), 1, arq_source);
+
+          rewind(arq_source);
+          fprintf(stdout, "Warning: Fragmentação.\n\n");
+        }
+
+        break; /* Para sair do while. */
       }
-      else
+      else /* Se o tamanho não for adequado. */
       {
-        fwrite(&tam_Reg_Disponivel, sizeof(short), 1,               arq_source);
-        fwrite( chaveBuscaChar,     sizeof(char),  tam_Reg_Inserir, arq_source);
-
-        fprintf(stdout, "Local: ofsset = %d\n", ante_LED);
-        fprintf(stdout, "Tamanho do espaço: %d\n", tam_Reg_Disponivel);
-        nova_LED = prox_LED;
-
-        rewind(arq_source);
-
-        fwrite(&nova_LED, sizeof(int), 1, arq_source);
-
-        rewind(arq_source);
-        fprintf(stdout, "Warning: Fragmentação.\n");
+        ante_LED = prox_LED;
       }
+    }   
+    else if (ante_LED == -1)
+    {
+      fseek(arq_source, 0, SEEK_END);
+      fprintf(stdout, "Local: ofsset = %ld bytes\nFim do arquivo\n\n", ftell(arq_source));
+      fwrite(&tam_Reg_Inserir, sizeof(short), 1,               arq_source);
+      fwrite( chaveBuscaChar,  sizeof(char),  tam_Reg_Inserir, arq_source);
+      rewind(arq_source);
       break;
     }
-    else /* Se o tamanho nao for adequado */
+    else
     {
-      ante_LED = prox_LED;
-      fseek(arq_source, prox_LED, SEEK_SET);
-      
-      if (prox_LED == -1)
-      {
-        fseek(arq_source, 0, SEEK_END);
-        fwrite(&tam_Reg_Inserir, sizeof(short), 1,               arq_source);
-        fwrite( chaveBuscaChar,  sizeof(char),  tam_Reg_Inserir, arq_source);
-        rewind(arq_source);
-        break;
-      }
+      fprintf(stderr, "Erro ao inserir.\n");
+      rewind(arq_source);
+      exit(1);
     }
   } 
+  rewind(arq_source);
   return 0;
 }
 
