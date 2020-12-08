@@ -39,7 +39,6 @@ int main(Contador c, Argumentos p)
     {
         fprintf(stderr, "Erro: opcao \"%s\" invalida.\n", p[MODO]);
     }
-
     
     return 0;
 }

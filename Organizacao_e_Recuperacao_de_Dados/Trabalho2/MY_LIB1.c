@@ -3,42 +3,6 @@
 #include <stdlib.h>
 #include "MY_LIB1.h"
 
-struct cabecalho
-{
-    int rrn_raiz;
-};
-
-struct paG
-{
-    int  contaChaves;       /* Conta o número de chaves na página. */
-    int  chaves[ORDEM - 1]; /* Vetor que armazena as chaves. */
-    int  filhos[ORDEM];     /* RRN dos filhos. */
-};
-
-struct pagAux
-{
-    int  contaChaves;
-    int  chaves[ORDEM];
-    int  filhos[ORDEM + 1];
-};
-
-
-int ler_chave(FILE *arq, int *chave)
-{
-    return fscanf(arq, "%d", chave);
-}
-
-int RRN_novapag(FILE *arq_Avr_B)
-{
-    int tam_pag = (int)sizeof(PAGINA);
-    int tam_cab = (int)sizeof(CABECALHO);
-    int byteoff;
-
-    fseek(arq_Avr_B, 0, SEEK_END);
-    byteoff = (int)ftell(arq_Avr_B);
-
-    return (byteoff - tam_cab) / tam_pag;
-}
 
 void le_pagina(int RRN, PAGINA *pag, FILE *arq_Avr_B)
 {
@@ -57,10 +21,21 @@ void escreve_pagina(int RRN, PAGINA *pag, FILE *arq_Avr_B)
     fwrite(pag, sizeof(PAGINA), 1, arq_Avr_B);
 }
 
+int RRN_novapag(FILE *arq_Avr_B)
+{
+    int tam_pag = (int)sizeof(PAGINA);
+    int tam_cab = (int)sizeof(CABECALHO);
+    int byteoff;
+
+    fseek(arq_Avr_B, 0, SEEK_END);
+    byteoff = (int)ftell(arq_Avr_B);
+
+    return (byteoff - tam_cab) / tam_pag;
+}
+
 void inicializa_pagina(PAGINA *pag)
 {
     int i;
-    pag->contaChaves = 0;
 
     for (i = 0; i < ORDEM - 1; i++)
     {
@@ -68,7 +43,8 @@ void inicializa_pagina(PAGINA *pag)
         pag->filhos[i] = -1;
     }
 
-    pag->filhos[i] = -1;
+    pag->filhos[i]    = -1;
+    pag->contaChaves = 0;
 }
 
 int pos_chave(int chave, int chaves[], int num_chaves)
@@ -99,133 +75,54 @@ void inserir_chave_promocao(int chave_Promovida, int RRN_Promovido, int chaves[]
     (*num_chaves)++;
 }
 
-void insere_na_pagina(int chave, int filho_Direito, PAGINA *pag)
-{
-    int i = pag->contaChaves;
-
-    while ((i > 0) && (chave < pag->chaves[i - 1]))
-    {
-        pag->chaves[i]     = pag->chaves[i - 1];
-        pag->filhos[i + 1] = pag->filhos[i];
-        i--;
-    }
-
-    pag->contaChaves++;
-
-    pag->chaves[i]     = chave;
-    pag->filhos[i + 1] = filho_Direito;
-}
-
-void insere_na_pagina_aux(int chave, int filho_Direito, PAGINA_AUX *pagaux)
-{
-    int i = ORDEM - 1;
-
-    while ((i > 0) && (chave < pagaux->chaves[i - 1]))
-    {
-        pagaux->chaves[i]     = pagaux->chaves[i - 1];
-        pagaux->filhos[i + 1] = pagaux->filhos[i];
-        i--;
-    }
-
-    pagaux->chaves[i]     = chave;
-    pagaux->filhos[i + 1] = filho_Direito;
-}
-
 void divide(int chave, int RRN, PAGINA *pag, int *chave_Promovida, int *filho_Direito_Promovido, PAGINA *novapag, FILE *arq_Avr_B)
 {
-    PAGINA_AUX pagaux;
+    // PAGINA_AUX pagaux;
+    int pagaux_chaves[ORDEM], pagaux_filhos[ORDEM + 1], pagaux_num_chaves;
     int meio, i;
-
-    pagaux.contaChaves = pag->contaChaves;
 
     for (i = 0; i < pag->contaChaves; i++)
     {
-        pagaux.chaves[i] = pag->chaves[i];
-        pagaux.filhos[i] = pag->filhos[i];
+        pagaux_chaves[i] = pag->chaves[i];
+        pagaux_filhos[i] = pag->filhos[i];
     }
 
-    pagaux.filhos[i] = pag->filhos[i];
+    pagaux_filhos[i] = pag->filhos[i];
+    pagaux_num_chaves = pag->contaChaves;
 
+    inserir_chave_promocao(chave, RRN, pagaux_chaves, pagaux_filhos, &(pagaux_num_chaves));
 
-    inserir_chave_promocao(chave, RRN, pagaux.chaves, pagaux.filhos, &(pagaux.contaChaves));
+    meio = pagaux_num_chaves / 2; 
 
-    meio = pagaux.contaChaves / 2; 
-
-    *chave_Promovida = pagaux.chaves[meio];
+    *chave_Promovida = pagaux_chaves[meio];
     
 
     inicializa_pagina(pag);
     
-    i = 0;
-    while (i < meio)
+    for(i = 0; i < meio; i++)
     {
-        pag->chaves[i] = pagaux.chaves[i];
-        pag->filhos[i] = pagaux.filhos[i];
+        pag->chaves[i] = pagaux_chaves[i];
+        pag->filhos[i] = pagaux_filhos[i];
         pag->contaChaves++;
-        i++;
     }
-    pag->filhos[i] = pagaux.filhos[i];
+    pag->filhos[i] = pagaux_filhos[i];
     
     inicializa_pagina(novapag);
 
-    i = meio + 1;
 
-    while (i < pagaux.contaChaves)
+
+    for (i = meio + 1; i < pagaux_num_chaves; i++)
     {
-        novapag->chaves[novapag->contaChaves] = pagaux.chaves[i];
-        novapag->filhos[novapag->contaChaves] = pagaux.filhos[i];
+        novapag->chaves[novapag->contaChaves] = pagaux_chaves[i];
+        novapag->filhos[novapag->contaChaves] = pagaux_filhos[i];
         novapag->contaChaves++;
-        i++;
     }
-    novapag->filhos[novapag->contaChaves] = pagaux.filhos[i];
+    novapag->filhos[novapag->contaChaves] = pagaux_filhos[i];
 
     *filho_Direito_Promovido = RRN_novapag(arq_Avr_B);
 }
 
-int busca_na_pagina(int chave, PAGINA pag, int *pos)
-{
-    int i = 0;
-
-    while (i < pag.contaChaves && chave > pag.chaves[i])
-        i++;
-
-    *pos = i;
-
-    if (*pos < pag.contaChaves && chave == pag.chaves[*pos])
-        return ENCONTRADO;
-    else
-        return NAO_ENCONTRADO;
-    
-}
-
-int busca(int RRN, int chave, int *rrn_Encontrado, int *pos_Encontrada, FILE *arq_Avr_B)
-{
-    if (RRN == -1)
-        return NAO_ENCONTRADO;
-    else
-    {
-        PAGINA *pag;
-        int pos;
-        
-        /* fazer funcao le pagina aqui.*/
-        le_pagina(RRN, pag, arq_Avr_B);
-        
-        int encontrada = busca_na_pagina(chave, *pag, &pos);
-
-        if (encontrada)
-        {
-            *rrn_Encontrado  = RRN;
-            *pos_Encontrada  = pos;
-
-            return ENCONTRADO;
-        }
-        else
-            return busca(pag->filhos[pos], chave, rrn_Encontrado, pos_Encontrada, arq_Avr_B);
-
-    }
-}
-
-int insere(int RRN_Atual, int chave, int *filho_Direito_Promovido, int *chave_Promovida, FILE *arq_Avr_B)
+int insere(int RRN_Atual, int chave, int *chave_Promovida, int *filho_Direito_Promovido, FILE *arq_Avr_B)
 {
     PAGINA pag, novapag;
     int  chv_pro, rrn_pro;
@@ -273,100 +170,8 @@ int insere(int RRN_Atual, int chave, int *filho_Direito_Promovido, int *chave_Pr
     }  
 }
 
-void gerenciador(int RRN, int chave, int *filho_Direito_Promovido, int *chave_Promovida, FILE *arq_Avr_B)
-{
-    PAGINA novapag;
-    int raiz;
-    
-    if (arq_Avr_B != NULL)
-    {
-        arq_Avr_B = fopen("arq.dat", "r+b");
-        /* ler o cabecalho */
-    }
-    else
-    {
-        arq_Avr_B = fopen("arq.dat", "wb");
-        
-        raiz = 0;
-        /* escrever cabecalho */
-
-        inicializa_pagina(&novapag);
-
-        fwrite(&novapag, sizeof(PAGINA), 1, arq_Avr_B);
-    }
-
-    scanf("%d", &chave); /* Usar fscanf(arq_chaves, "%d", &chave); */
-
-    while (chave != - 1)
-    {
-        if (insere(raiz, chave, filho_Direito_Promovido, chave_Promovida, arq_Avr_B))
-        {
-            inicializa_pagina(&novapag);
-
-            novapag.chaves[0] = *chave_Promovida;
-            novapag.filhos[0] = raiz;
-            novapag.filhos[1] = *filho_Direito_Promovido;
-
-            fwrite(&novapag, sizeof(PAGINA), 1, arq_Avr_B);
-
-            raiz = RRN_novapag(arq_Avr_B);
-        }
-
-        scanf("%d", &chave); /* Usar fscanf(arq_chaves, "%d", &chave); */
-    }
-
-    fwrite(&raiz, sizeof(int), 1, arq_Avr_B);
-    fclose(arq_Avr_B);
-}
-
-void criar(char *nome_arq)
-{
-    FILE *chaves, *arq_Avr_B;
-    int reg_cont, i;
-    int chave;
-    char buffer[BUFF];
-
-    CABECALHO cabecalho;
-    PAGINA raiz;
-
-    if ((chaves = fopen(nome_arq, "r")) == NULL)
-    {
-        fprintf(stderr, "Erro: o arquivo dados.dat nao foi encontrado.\n");
-        exit(1);
-    }
-   
-    if ((arq_Avr_B = fopen("btree.dat", "w+b")) == NULL)
-    {
-        fprintf(stderr, "Erro: nao foi possivel criar o arquivo btree.dat .\n");
-        exit(1);
-    }
-
-    cabecalho.rrn_raiz = 0;
-
-    fwrite(&cabecalho, sizeof(CABECALHO), 1, arq_Avr_B);
-    
-    inicializa_pagina(&raiz);
-
-    escreve_pagina(cabecalho.rrn_raiz, &raiz, arq_Avr_B);
-
-    while (ler_chave(chaves, &chave) > 0)
-    {
-        if (insere_chave(chave, &(cabecalho.rrn_raiz), arq_Avr_B) == ERRO)
-        {
-            fprintf(stderr, "Erro: chave \"%d\" ja existe.\n", chave);
-        }
-    }
-
-    fseek(arq_Avr_B, 0, SEEK_SET);
-    fwrite(&cabecalho, sizeof(CABECALHO), 1, arq_Avr_B);
-
-    fclose(chaves);
-    fclose(arq_Avr_B);
-}
-
 int insere_chave(int chave, int *RRN_Raiz, FILE *arq_Arv_B)
 {
-    PAGINA raiz;
     int chave_Promovida, filho_Direito_Promovido;
     int retorno;
 
@@ -392,6 +197,55 @@ int insere_chave(int chave, int *RRN_Raiz, FILE *arq_Arv_B)
     }
     
     return INSERCAO;
+}
+
+int ler_chave(FILE *arq, int *chave)
+{
+    return fscanf(arq, "%d", chave);
+}
+
+void criar(char *nome_arq)
+{
+    FILE *arq_chaves, *arq_Avr_B;
+    int i;
+    int chave;
+
+    CABECALHO cabecalho;
+    PAGINA raiz;
+
+    if ((arq_chaves = fopen(nome_arq, "rb")) == NULL)
+    {
+        fprintf(stderr, "Erro: o arquivo dados.dat nao foi encontrado.\n");
+        exit(1);
+    }
+   
+    if ((arq_Avr_B = fopen("btree.dat", "w+b")) == NULL)
+    {
+        fprintf(stderr, "Erro: nao foi possivel criar o arquivo btree.dat .\n");
+        exit(1);
+    }
+
+    cabecalho.rrn_raiz = 0;
+
+    fwrite(&cabecalho, sizeof(CABECALHO), 1, arq_Avr_B);
+    
+    inicializa_pagina(&raiz);
+
+    escreve_pagina(cabecalho.rrn_raiz, &raiz, arq_Avr_B);
+
+    while (ler_chave(arq_chaves, &chave) > 0)
+    {
+        if (insere_chave(chave, &(cabecalho.rrn_raiz), arq_Avr_B) == ERRO)
+        {
+            fprintf(stderr, "Erro: chave \"%d\" ja existe.\n", chave);
+        }
+    }
+
+    fseek(arq_Avr_B, 0, SEEK_SET);
+    fwrite(&cabecalho, sizeof(CABECALHO), 1, arq_Avr_B);
+
+    fclose(arq_chaves);
+    fclose(arq_Avr_B);
 }
 
 void imprime(FILE *arq_Avr_B)
@@ -464,7 +318,7 @@ void estatisticas(FILE *arq_Avr_B)
     
     fseek(arq_Avr_B, sizeof(CABECALHO), SEEK_SET);
 
-    while (fread(&pag, sizeof(CABECALHO), 1, arq_Avr_B) > 0)
+    while (fread(&pag, sizeof(PAGINA), 1, arq_Avr_B) > 0)
     {
         qtd_paginas++;
         qtd_chaves += pag.contaChaves;
@@ -493,3 +347,125 @@ void imprimir_relatorio()
 
     fclose(arq_Avr_B);
 }
+
+
+// void insere_na_pagina(int chave, int filho_Direito, PAGINA *pag)
+// {
+//     int i = pag->contaChaves;
+
+//     while ((i > 0) && (chave < pag->chaves[i - 1]))
+//     {
+//         pag->chaves[i]     = pag->chaves[i - 1];
+//         pag->filhos[i + 1] = pag->filhos[i];
+//         i--;
+//     }
+
+//     pag->contaChaves++;
+
+//     pag->chaves[i]     = chave;
+//     pag->filhos[i + 1] = filho_Direito;
+// }
+
+// void insere_na_pagina_aux(int chave, int filho_Direito, PAGINA_AUX *pagaux)
+// {
+//     int i = ORDEM - 1;
+
+//     while ((i > 0) && (chave < pagaux->chaves[i - 1]))
+//     {
+//         pagaux->chaves[i]     = pagaux->chaves[i - 1];
+//         pagaux->filhos[i + 1] = pagaux->filhos[i];
+//         i--;
+//     }
+
+//     pagaux->chaves[i]     = chave;
+//     pagaux->filhos[i + 1] = filho_Direito;
+// }
+
+// int busca_na_pagina(int chave, PAGINA pag, int *pos)
+// {
+//     int i = 0;
+
+//     while (i < pag.contaChaves && chave > pag.chaves[i])
+//         i++;
+
+//     *pos = i;
+
+//     if (*pos < pag.contaChaves && chave == pag.chaves[*pos])
+//         return ENCONTRADO;
+//     else
+//         return NAO_ENCONTRADO;
+    
+// }
+
+// int busca(int RRN, int chave, int *rrn_Encontrado, int *pos_Encontrada, FILE *arq_Avr_B)
+// {
+//     if (RRN == -1)
+//         return NAO_ENCONTRADO;
+//     else
+//     {
+//         PAGINA *pag;
+//         int pos;
+        
+//         /* fazer funcao le pagina aqui.*/
+//         le_pagina(RRN, pag, arq_Avr_B);
+        
+//         int encontrada = busca_na_pagina(chave, *pag, &pos);
+
+//         if (encontrada)
+//         {
+//             *rrn_Encontrado  = RRN;
+//             *pos_Encontrada  = pos;
+
+//             return ENCONTRADO;
+//         }
+//         else
+//             return busca(pag->filhos[pos], chave, rrn_Encontrado, pos_Encontrada, arq_Avr_B);
+
+//     }
+// }
+
+// void gerenciador(int RRN, int chave, int *filho_Direito_Promovido, int *chave_Promovida, FILE *arq_Avr_B)
+// {
+//     PAGINA novapag;
+//     int raiz;
+    
+//     if (arq_Avr_B != NULL)
+//     {
+//         arq_Avr_B = fopen("arq.dat", "r+b");
+//         /* ler o cabecalho */
+//     }
+//     else
+//     {
+//         arq_Avr_B = fopen("arq.dat", "wb");
+        
+//         raiz = 0;
+//         /* escrever cabecalho */
+
+//         inicializa_pagina(&novapag);
+
+//         fwrite(&novapag, sizeof(PAGINA), 1, arq_Avr_B);
+//     }
+
+//     scanf("%d", &chave); /* Usar fscanf(arq_chaves, "%d", &chave); */
+
+//     while (chave != - 1)
+//     {
+//         if (insere(raiz, chave, filho_Direito_Promovido, chave_Promovida, arq_Avr_B))
+//         {
+//             inicializa_pagina(&novapag);
+
+//             novapag.chaves[0] = *chave_Promovida;
+//             novapag.filhos[0] = raiz;
+//             novapag.filhos[1] = *filho_Direito_Promovido;
+
+//             fwrite(&novapag, sizeof(PAGINA), 1, arq_Avr_B);
+
+//             raiz = RRN_novapag(arq_Avr_B);
+//         }
+
+//         scanf("%d", &chave); /* Usar fscanf(arq_chaves, "%d", &chave); */
+//     }
+
+//     fwrite(&raiz, sizeof(int), 1, arq_Avr_B);
+//     fclose(arq_Avr_B);
+// }
