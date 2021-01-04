@@ -87,7 +87,7 @@ void divide(int chave, int RRN, PAGINA *pag, int *chave_Promovida, int *filho_Di
         pagaux_filhos[i] = pag->filhos[i];
     }
 
-    pagaux_filhos[i] = pag->filhos[i];
+    pagaux_filhos[i]  = pag->filhos[i];
     pagaux_num_chaves = pag->contaChaves;
 
     inserir_chave_promocao(chave, RRN, pagaux_chaves, pagaux_filhos, &(pagaux_num_chaves));
@@ -229,7 +229,7 @@ void criar(char *nome_arq)
 
     fwrite(&cabecalho, sizeof(CABECALHO), 1, arq_Avr_B);
     
-    inicializa_pagina(&raiz);
+    inicializa_pagina(&raiz); /* Desenha os quadradinhos. */
 
     escreve_pagina(cabecalho.rrn_raiz, &raiz, arq_Avr_B);
 
@@ -253,7 +253,7 @@ void imprime(FILE *arq_Avr_B)
     CABECALHO cabecalho;
     PAGINA pag;
 
-    int i, rrn = 0;
+    int i, rrn = 0; /* Para achar a pagina raiz */
 
     fseek(arq_Avr_B, 0, SEEK_SET);
     fread(&cabecalho, sizeof(CABECALHO), 1, arq_Avr_B);

@@ -1,5 +1,4 @@
 #define ORDEM 5 /* Ordem da árvore, quantidade de ponteiros. */
-#define BUFFER_SIZE  500
 
 typedef char** Argumentos;
 typedef int    Contador;

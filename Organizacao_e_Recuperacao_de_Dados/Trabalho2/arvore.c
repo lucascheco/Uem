@@ -25,13 +25,13 @@ int main(Contador c, Argumentos p)
         exit(1);
     }
 
-    if (strcmp(p[MODO], "-c") == 0)
+    if (!strcmp(p[MODO], "-c"))
     {
         printf("Criando Arvore-B... ");
         criar(p[ARQ]);
         printf("Arvore-B criada com sucesso.\n");
     }
-    else if (strcmp(p[MODO], "-p") == 0)
+    else if (!strcmp(p[MODO], "-p"))
     {
         imprimir_relatorio();
     }
