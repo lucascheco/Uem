@@ -38,7 +38,7 @@ int read_Vec(int vet[])
 {
     int i = 0;
 
-    while(scanf("%d", &vet[i]))
+    while(scanf("%d", vet + i))
         i++;
     
     if (i > VET_BUFFER)
