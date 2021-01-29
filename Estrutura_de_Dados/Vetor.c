@@ -5,7 +5,7 @@
 ************************************************************************************/
 
 #include <stdio.h>
-
+#include <stdlib.h>
 #define VET_BUFFER 30
 
 int read_Vec(int vet[]);
