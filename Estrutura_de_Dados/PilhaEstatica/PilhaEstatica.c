@@ -1,3 +1,9 @@
+/***********************************************************************************
+    Author:      Lucas Pachco.
+    Description: Stack function.
+    Date:        02/02/2021
+************************************************************************************/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "PilhaEstatica.h"
