@@ -34,7 +34,7 @@ int main()
     {
         op = menu();
         option(op);
-    } while(op != 6);
+    } while(op != 7);
 
     return 0;
 }
@@ -48,8 +48,9 @@ int menu()
     printf("2 - INSERT STACK: \n");
     printf("3 - REMOVE STACK: \n");
     printf("4 - SHOW TOP  STACK: \n");
-    printf("5 - LIST STACK: \n");
-    printf("6 - EXIT\n");
+    printf("5 - SHOW STACK: \n");
+    printf("6 - LIST STACK: \n");
+    printf("7 - EXIT\n");
     printf(">>>>");
     
     scanf("%d", &op);
@@ -110,6 +111,34 @@ void option(int op)
             break;
 
         case 6:
+            if (isEmpty(stack))
+                printf("Error: Stack is empty!\n");
+            else
+            {
+                int size = stack.top + 1;
+                STACK aux;
+                create_Stack(&aux);
+                for (int i = 0; i < size; i++)
+                {
+                    _remove_(&stack, &number);
+                    _insert_(&aux, number);
+                }
+
+                for (int i = 0; i < size; i++)
+                {
+                    _remove_(&aux, &number);
+                    printf("%d ", number);
+                    _insert_(&stack, number);
+                }
+                printf("press anything...");
+                getchar();        
+                getchar();
+                clean_screen();
+            }    
+                
+            break;
+
+        case 7:
             break;
     }    
 }
