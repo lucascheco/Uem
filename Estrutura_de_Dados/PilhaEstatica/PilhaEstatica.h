@@ -1,6 +1,6 @@
 /***********************************************************************************
     Author:      Lucas Pachco.
-    Description: Stack abstract type and prototypes.
+    Description: Static Stack abstract type and prototypes.
     Date:        02/02/2021
 ************************************************************************************/
 

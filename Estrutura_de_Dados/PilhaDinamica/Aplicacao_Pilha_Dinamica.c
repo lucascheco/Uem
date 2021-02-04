@@ -1,7 +1,7 @@
 /***********************************************************************************
     Author:      Lucas Pachco.
-    Description: Stack aplication example.
-    Date:        02/02/2021
+    Description: Dynamic Stack aplication example.
+    Date:        04/02/2021
 ************************************************************************************/
 
 #include <stdio.h>

@@ -1,6 +1,6 @@
 /***********************************************************************************
     Author:      Lucas Pachco.
-    Description: Stack aplication example.
+    Description: Static Stack aplication example.
     Date:        02/02/2021
 ************************************************************************************/
 
