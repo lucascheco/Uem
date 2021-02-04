@@ -9,9 +9,13 @@
 #include "PilhaEstatica.h"
 
 STACK stack;
+int number;
 
 int menu();
 void option(int op);
+void show_Stack(STACK s);
+void list_Stack(STACK* s);
+
 void clean_screen()
 {
 #ifdef _WIN32
@@ -60,7 +64,6 @@ int menu()
 
 void option(int op)
 {
-    int number;
     switch (op)
     {
         case 1:
@@ -98,47 +101,58 @@ void option(int op)
             break;
         
         case 5:
-            clean_screen();
-            for (int i = stack.top; i > -1; i--)
-            {
-                printf("\t|%d|\n", stack.stack[i]);
-            }
-            printf("\t^^^^\n\n");
-            printf("press anything...");
-            getchar();        
-            getchar();
-            clean_screen();
+            if (isEmpty(stack))
+                printf("Error: Stack is empty\n");
+            else
+                show_Stack(stack);
+           
             break;
 
         case 6:
             if (isEmpty(stack))
                 printf("Error: Stack is empty!\n");
             else
-            {
-                int size = stack.top + 1;
-                STACK aux;
-                create_Stack(&aux);
-                for (int i = 0; i < size; i++)
-                {
-                    _remove_(&stack, &number);
-                    _insert_(&aux, number);
-                }
-
-                for (int i = 0; i < size; i++)
-                {
-                    _remove_(&aux, &number);
-                    printf("%d ", number);
-                    _insert_(&stack, number);
-                }
-                printf("press anything...");
-                getchar();        
-                getchar();
-                clean_screen();
-            }    
+                list_Stack(&stack); 
                 
             break;
 
         case 7:
             break;
     }    
+}
+
+void show_Stack(STACK s)
+{          
+    clean_screen();
+    for (int i = s.top; i > -1; i--)
+        printf("\t|%d|\n", s.stack[i]);
+    
+    printf("\t^^^^\n\n");
+    printf("press anything...");
+    getchar();        
+    getchar();
+    clean_screen();
+ }
+
+void list_Stack(STACK* s)
+{
+    int size = s->top + 1;
+    STACK aux;
+    create_Stack(&aux);           
+    for (int i = 0; i < size; i++)
+    {    
+        _remove_(s, &number);     
+        _insert_(&aux, number);            
+    }
+
+    for (int i = 0; i < size; i++)
+    {
+        _remove_(&aux, &number);
+        printf("%d ", number);
+        _insert_(s, number);
+    }     
+    printf("press anything...");
+    getchar();        
+    getchar();
+    clean_screen();
 }
