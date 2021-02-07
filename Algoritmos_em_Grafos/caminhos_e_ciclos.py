@@ -45,7 +45,7 @@ def is_the_same_Cycle(First_List: List[int], Second_List: List[int]):
 # Que eu acho que é o index do Valor V'0 na lista 1
     for x in range(0, K):
         if First_List[x] == VL0:
-            J = x;
+            J = x
     
     for i in range(0, K):
         if 'J' not in locals() or Second_List[i] != First_List[(i + J) % K]:
