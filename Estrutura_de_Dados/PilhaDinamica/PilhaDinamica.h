@@ -1,5 +1,5 @@
 /***********************************************************************************
-    Author:      Lucas Pachco.
+    Author:      Lucas Pacheco.
     Description: Dynamic Stack abstract type and prototypes.
     Date:        04/02/2021
 ************************************************************************************/
@@ -15,11 +15,11 @@ typedef NODE* STACK;
 
 void create_Stack(STACK *s);
 
-int isEmpty(STACK s);
+int is_Stack_Empty(STACK s);
 
 int top_number(STACK s, int *top);
 
-int _insert_(STACK *s, int data);
+int insert_Stack(STACK *s, int data);
 
-int _remove_(STACK *s, int *data);
+int remove_Stack(STACK *s, int *data);
 

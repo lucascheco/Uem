@@ -1,9 +1,9 @@
 # Author: Lucas Pacheco
 
-SCRIPT1 = PilhaDinamica
-SCRIPT2 = checa_Parentese
+SCRIPT1 = FilaEstatica
+SCRIPT2 = Aplicacao_Fila_Estatica
 
-SRC = "../PilhaDinamica.h"
+SRC = "../FilaEstatica.h"
 
 CC  = gcc 
 OBJFLAG = -c

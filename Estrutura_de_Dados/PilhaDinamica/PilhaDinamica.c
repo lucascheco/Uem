@@ -1,9 +1,8 @@
 /***********************************************************************************
-    Author:      Lucas Pachco.
+    Author:      Lucas Pacheco.
     Description: Dynamic Stack functions.
     Date:        04/02/2021
 ************************************************************************************/
-
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,14 +13,14 @@ void create_Stack(STACK* s)
     *s = NULL;    
 }
 
-int isEmpty(STACK s)
+int is_Stack_Empty(STACK s)
 {
     return s == NULL;
 }
 
 int top_number(STACK s, int* top)
 {
-    if (isEmpty(s))
+    if (is_Stack_Empty(s))
         return 0;
     else
     {
@@ -30,7 +29,7 @@ int top_number(STACK s, int* top)
     }
 }
 
-int _insert_(STACK* s, int data)
+int insert_Stack(STACK* s, int data)
 {
     NODE* aux;
 
@@ -43,11 +42,11 @@ int _insert_(STACK* s, int data)
     return 1;
 }
 
-int _remove_(STACK* s, int* data)
+int remove_Stack(STACK* s, int* data)
 {
     NODE* aux;
 
-    if (isEmpty(*s))
+    if (is_Stack_Empty(*s))
         return 0;
     else
     {

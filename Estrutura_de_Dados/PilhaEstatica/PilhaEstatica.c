@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include "PilhaEstatica.h"
 
+
 int isFull(STACK s)
 {
     return (s.top == MAX - 1);
@@ -49,6 +50,5 @@ int _remove_(STACK *s, int *number)
 
 int top_number(STACK s)
 {
-
     return(s.stack[s.top]);
 }
