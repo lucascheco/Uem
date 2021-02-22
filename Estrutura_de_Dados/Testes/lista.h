@@ -3,23 +3,23 @@
 
 typedef struct Lista TLista;
 
-TLista* cria_lista (int tam); //Done
+TLista* cria_lista (int tam); 
 
-int lista_existe(TLista* lista); // Done
+int lista_existe(TLista* lista); 
 
-int lista_vazia(TLista* lista); //Done  
+int lista_vazia(TLista* lista);   
 
-int lista_cheia(TLista* lista, int tam); //Done 
+int lista_cheia(TLista* lista, int tam);  
 
-void destroi(TLista* lista); //Done
+void destroi(TLista* lista); 
 
-int tamanho (TLista* lista); //Done
+int tamanho (TLista* lista); 
 
-int quantidade(TLista* lista); //Done
+int quantidade(TLista* lista); 
 
-void imprimir(TLista* lista); //Done
+void imprimir(TLista* lista); 
 
-int inserir(TLista* lista, char c, int pos); //Acho q ta feita
+int inserir(TLista* lista, char c, int pos);
 
 int remover(TLista* lista, int pos);
 
