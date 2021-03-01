@@ -18,19 +18,16 @@ int busca_Lista(LISTA L, char nome[], int* posAnterior)
         return 0;
     else
     {
-        int tem_Mais = L.lista[posPosterior].prox != TERRA;
-
-        while (strcmp(L.lista[posPosterior].dado.nome, nome) == -1 && tem_Mais)
+        while (strcmp(L.lista[posPosterior].dado.nome, nome) < 0 &&  L.lista[posPosterior].prox != TERRA)
         {
             *posAnterior = posPosterior;
             posPosterior = L.lista[posPosterior].prox;
-            tem_Mais = L.lista[posPosterior].prox != TERRA;
         }
 
         if (strcmp(L.lista[posPosterior].dado.nome, nome) == 0)
             return 1;
         else 
-        if (strcmp(L.lista[posPosterior].dado.nome, nome) == 1)
+        if (strcmp(L.lista[posPosterior].dado.nome, nome) > 0)
             return 0;
         else
         {
@@ -43,10 +40,8 @@ int busca_Lista(LISTA L, char nome[], int* posAnterior)
 /*Publicas*/
 void criaListaOrd(LISTA* L)
 {
-    for (int i = 0; i < MAXLIST - 1; ++i)
+    for (int i = 0; i < MAXLIST + 1; ++i)
         L->lista[i].prox = i + 1;
-
-    L->lista[MAXLIST - 1].prox = TERRA;
     
     L->quant   = 0;
     L->ocupado = TERRA;
@@ -99,9 +94,9 @@ int consulta_por_Pos(LISTA L, int pos, DADO* dado)
         return 0;
     else
     {
-        int count = 1, posAux = L.ocupado;
+        int i = 1, posAux = L.ocupado;
         
-        while (pos != count++)
+        while (pos != i++)
             posAux = L.lista[posAux].prox;
 
         *dado = L.lista[posAux].dado;
@@ -158,7 +153,7 @@ int remove_Lista(LISTA* L, DADO* dado)
             if (posAnterior == TERRA)
             {
                 prox = L->ocupado;
-                *dado = L->lista[L->ocupado].dado;
+                *dado = L->lista[prox].dado;
                 L->ocupado = L->lista[prox].prox;
             }
             else

@@ -19,9 +19,9 @@ void clean_screen();
 int menu()
 {   
     int op;
-    printf("--------------------------\n");
-    printf("   PROGRAMA LISTA ARRASTO\n");
-    printf("--------------------------\n");
+    printf("------------------------------------------\n");
+    printf("   PROGRAMA LISTA ORDENADA ENCADEADA\n");
+    printf("------------------------------------------\n");
 
     printf("Menu:\n");
     printf("1 - Criar\n");

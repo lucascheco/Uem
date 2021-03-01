@@ -5,8 +5,8 @@
 ************************************************************************************/
 
 #define MAXNOME 75
-#define MAXLIST 100
-#define TERRA   -1
+#define MAXLIST 3
+#define TERRA   MAXLIST
 
 typedef struct tipoDN
 {
@@ -32,7 +32,7 @@ ELEM;
 
 typedef struct lista
 {
-    ELEM lista[MAXLIST];
+    ELEM lista[MAXLIST + 1];
     int quant;
     int ocupado;
     int livre;
