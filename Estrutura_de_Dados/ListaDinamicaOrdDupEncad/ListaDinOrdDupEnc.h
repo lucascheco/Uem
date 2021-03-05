@@ -1,12 +1,4 @@
-/***********************************************************************************
-    Author:      Lucas Pacheco.
-    Description: Lista encadeada ordenada, tipos abstratos e prtótipos.
-    Date:        23/02/2021
-************************************************************************************/
-
-#define MAXNOME 75
-#define MAXLIST 100
-#define TERRA   MAXLIST
+#define MAXNOME 45
 
 typedef struct tipoDN
 {
@@ -26,20 +18,21 @@ DADO;
 typedef struct elem
 {
     DADO dado;
-    int prox;
+    struct elem* prox;
+    struct elem* ant;
 }
 ELEM;
 
+typedef ELEM *point;
+
 typedef struct lista
 {
-    ELEM lista[MAXLIST + 1];
+    point lista_primeira, lista_ultimo;
     int quant;
-    int ocupado;
-    int livre;
+
 }
 LISTA;
 
-/*Publicas*/
 void criaListaOrd(LISTA* L);
 
 int esta_cheia(LISTA L);
