@@ -86,6 +86,9 @@ void app(int op)
                 fprintf(stderr, "Erro: lista cheia ou \"pos\" fora do escopo do tamanho da lista\n");
                 break;
             }
+            
+            debug_lista(lista);
+
             printf("A lista de %d elementos e:\n", tamanho(lista));
             imprimir(lista);
             printf("\n");

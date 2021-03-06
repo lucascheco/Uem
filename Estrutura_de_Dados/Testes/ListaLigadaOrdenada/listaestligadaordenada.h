@@ -2,6 +2,7 @@
 #define LISTA_H_INCLUDED
 
 typedef struct Lista TLista;
+void debug_lista(const TLista* lista);
 
 int lista_existe(const TLista* lista);
 

@@ -17,6 +17,14 @@ struct Lista
   int max; 
 };
 
+void debug_lista(const TLista* lista)
+{
+  printf("\n_____________DEBUG_____________");
+  printf("\n|--Indice do primeiro     -> %d|", lista->prim);
+  printf("\n|--Indice dos disponiveis -> %d|", lista->dispo);
+  printf("\n|_____________________________|\n\n");
+}
+
 /*Privadas*/
 
 /*  Essa funcao buscara o indice do "no" armazenado no vetor.
@@ -43,18 +51,50 @@ int busca_indice(TLista lista, char x, int* indice_atual, int* indice_anterior)
     {
       if (lista.vet[*indice_atual].info == x)
         return 1;
-      else 
-      if (lista.vet[*indice_atual].info > x)
-        return 0;
-      else
-      {
-        *indice_anterior = *indice_atual;
-        *indice_atual    = lista.vet[*indice_atual].prox;
-      }
+
+      *indice_anterior = *indice_atual;
+      *indice_atual    = lista.vet[*indice_atual].prox;
     }
-    *indice_anterior = *indice_atual;
+
     return 0;
   }
+}
+
+int busca_indice_anterior_a_insercao(TLista lista, char x, int* indice_anterior)
+{
+  int indice_atual = lista.prim;
+  *indice_anterior = -1;
+
+  if (esta_vazia(&lista))
+    return 0;
+  else
+  {
+    while (indice_atual != lista.dispo)
+    { 
+      if (lista.vet[indice_atual].info > x)
+        return 1;
+
+      *indice_anterior = indice_atual;
+      indice_atual = lista.vet[indice_atual].prox;
+    }
+
+    return 1;
+  }
+}
+
+int busca_indice_ultimo(TLista lista, int* indice_ultimo)
+{
+  if (esta_vazia(&lista))
+    return 0;
+
+  int indice = lista.prim;
+
+  while (lista.vet[indice].prox != lista.dispo)
+    indice = lista.vet[indice].prox;
+
+  *indice_ultimo = indice;
+
+  return 1;
 }
 
 /*Publicas*/
@@ -106,39 +146,85 @@ void imprimir(const TLista* lista)
   }
 }
 
+// int inserir(TLista* lista, char x)
+// {
+//   if (esta_cheia(lista))
+//     return 0;
+//   else
+//   {
+//     int indice_atual, indice_anterior;
+
+//     if (busca_indice(*lista, x, &indice_atual, &indice_anterior)) /* Na insercao, a busca retornara o elemento anterior  a insercao. */
+//       return 0;
+//     else
+//     {
+//       if (esta_vazia(lista))
+//       {
+//         lista->prim = lista->dispo;                  /* Nao ira mais mudar, este campo é atualizado somente na primeira insercao e na ultima remocao.*/
+//         lista->vet[lista->dispo].info = x;            
+//         lista->dispo = lista->vet[lista->dispo].prox;/* Atualizacao da lista de disponiveis */
+//       }
+//       else
+//       {
+        
+//         int indice_dispo = lista->dispo; 
+ 
+//         lista->dispo = lista->vet[indice_dispo].prox; /* Atualizacao da lista de disponiveis */
+
+//         lista->vet[indice_dispo].prox = lista->vet[indice_anterior].prox; 
+//         lista->vet[indice_dispo].info = x;
+//         lista->vet[indice_anterior].prox = indice_dispo;
+//       }
+
+//       lista->qtde++;
+      
+//       return 1;
+//     }
+//   }
+// }
+
 int inserir(TLista* lista, char x)
 {
   if (esta_cheia(lista))
     return 0;
   else
   {
-    int indice_atual, indice_anterior;
+    int indice_anterior, indice_atual, indice_ultimo;
 
-    if (busca_indice(*lista, x, &indice_atual, &indice_anterior)) /* Na insercao, a busca retornara o elemento anterior  a insercao. */
-      return 0;
-    else
+    /* Atribuimos valores para todos indices acima. */
+    indice_atual = lista->dispo;
+    busca_indice_anterior_a_insercao(*lista, x, &indice_anterior);
+    busca_indice_ultimo(*lista, &indice_ultimo);
+
+    printf("\n-->indice anterior = %d\n", indice_anterior);
+    printf("-->indice atual = %d\n", indice_atual);
+    printf("--indice ultimo = %d\n\n", indice_ultimo);
+    
+    if (esta_vazia(lista))
     {
-      if (esta_vazia(lista))
-      {
-        lista->prim = lista->dispo;                  /* Nao ira mais mudar, este campo é atualizado somente na primeira insercao e na ultima remocao.*/
-        lista->vet[lista->dispo].info = x;            
-        lista->dispo = lista->vet[lista->dispo].prox;/* Atualizacao da lista de disponiveis */
-      }
-      else
-      {
-        int indice_dispo = lista->dispo; 
- 
-        lista->dispo = lista->vet[indice_dispo].prox; /* Atualizacao da lista de disponiveis */
+      lista->vet[indice_atual].info = x;
 
-        lista->vet[indice_dispo].prox = lista->vet[indice_anterior].prox; 
-        lista->vet[indice_dispo].info = x;
-        lista->vet[indice_anterior].prox = indice_dispo;
-      }
-
-      lista->qtde++;
-      
-      return 1;
+      lista->prim = lista->dispo;
+      lista->dispo = lista->vet[indice_atual].prox;
     }
+    else 
+    {
+      lista->vet[indice_atual].info = x;
+
+      if (indice_anterior == -1)
+        lista->prim = lista->dispo;
+      
+      lista->dispo = lista->vet[indice_atual].prox;
+
+      lista->vet[indice_ultimo].prox = lista->vet[indice_atual].prox;
+      lista->vet[indice_atual].prox = lista->vet[indice_anterior].prox;
+      lista->vet[indice_anterior].prox = indice_atual;
+
+    }
+
+    lista->qtde++;
+    
+    return 1;
   }
 }
 
@@ -148,30 +234,12 @@ int remover (TLista* lista, char x)
     return 0;
   else
   {
-    int indice_atual, indice_anterior; 
+    int indice_anterior, indice_atual, indice_ultimo;
     
-    if (busca_indice(*lista, x, &indice_atual, &indice_anterior))
-    {
-      printf("Chegou aqui.\n");
-      return 0;
-    }
-    else
-    {
-      if (indice_anterior == -1)
-      {
-        lista->prim = lista->dispo;
-      }
-      else
-      {
-        lista->vet[indice_anterior].prox = lista->vet[indice_atual].prox;
-      }
-      
-      lista->vet[indice_atual].prox = lista->dispo;
-      lista->dispo = indice_atual;  
-      lista->qtde--;
-      
-      return 1;
-    }
+    indice_atual = lista->dispo;
+    busca_indice_anterior_a_insercao(*lista, x, &indice_anterior);
+    busca_indice_ultimo(*lista, &indice_ultimo);
+
   }
 }
 
