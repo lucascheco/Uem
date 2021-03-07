@@ -16,7 +16,7 @@ int inserir(TLista* lista, char x);
 
 int remover(TLista* lista, char x);
 
-int acessar(TLista* lista, int pos, char* elem);
+int acessar(TLista* lista, int pos, char *x);
 
 int devolver(TLista* lista, int *pos, char x);
 

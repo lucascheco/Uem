@@ -20,8 +20,9 @@ struct Lista
 void debug_lista(const TLista* lista)
 {
   printf("\n_____________DEBUG_____________");
-  printf("\n|--Indice do primeiro     -> %d|", lista->prim);
+  printf("\n|--Indice da quantidade   -> %d|", lista->qtde);
   printf("\n|--Indice dos disponiveis -> %d|", lista->dispo);
+  printf("\n|--Indice do primeiro     -> %d|", lista->prim);
   printf("\n|_____________________________|\n\n");
 }
 
@@ -139,49 +140,12 @@ void imprimir(const TLista* lista)
   
   int indice = lista->prim;
   
-  while(indice !=- 1)
+  while(indice != lista->dispo)
   {
     printf("%c -> ",lista->vet[indice].info);
     indice = lista->vet[indice].prox;
   }
 }
-
-// int inserir(TLista* lista, char x)
-// {
-//   if (esta_cheia(lista))
-//     return 0;
-//   else
-//   {
-//     int indice_atual, indice_anterior;
-
-//     if (busca_indice(*lista, x, &indice_atual, &indice_anterior)) /* Na insercao, a busca retornara o elemento anterior  a insercao. */
-//       return 0;
-//     else
-//     {
-//       if (esta_vazia(lista))
-//       {
-//         lista->prim = lista->dispo;                  /* Nao ira mais mudar, este campo é atualizado somente na primeira insercao e na ultima remocao.*/
-//         lista->vet[lista->dispo].info = x;            
-//         lista->dispo = lista->vet[lista->dispo].prox;/* Atualizacao da lista de disponiveis */
-//       }
-//       else
-//       {
-        
-//         int indice_dispo = lista->dispo; 
- 
-//         lista->dispo = lista->vet[indice_dispo].prox; /* Atualizacao da lista de disponiveis */
-
-//         lista->vet[indice_dispo].prox = lista->vet[indice_anterior].prox; 
-//         lista->vet[indice_dispo].info = x;
-//         lista->vet[indice_anterior].prox = indice_dispo;
-//       }
-
-//       lista->qtde++;
-      
-//       return 1;
-//     }
-//   }
-// }
 
 int inserir(TLista* lista, char x)
 {
@@ -219,7 +183,6 @@ int inserir(TLista* lista, char x)
       lista->vet[indice_ultimo].prox = lista->vet[indice_atual].prox;
       lista->vet[indice_atual].prox = lista->vet[indice_anterior].prox;
       lista->vet[indice_anterior].prox = indice_atual;
-
     }
 
     lista->qtde++;
@@ -235,11 +198,32 @@ int remover (TLista* lista, char x)
   else
   {
     int indice_anterior, indice_atual, indice_ultimo;
-    
-    indice_atual = lista->dispo;
-    busca_indice_anterior_a_insercao(*lista, x, &indice_anterior);
+
+    /* Atribuimos valores para todos indices acima. */
+    if (!busca_indice(*lista, x, &indice_atual, &indice_anterior)) /* Se nao achar o elemento retorna falso*/
+      return 0;
+
     busca_indice_ultimo(*lista, &indice_ultimo);
 
+    printf("\n-->indice anterior = %d\n", indice_anterior);
+    printf("-->indice atual = %d\n",      indice_atual);
+    printf("--indice ultimo = %d\n\n",    indice_ultimo);
+    
+    if (indice_anterior == -1)
+    {    
+      lista->prim = lista->vet[indice_atual].prox;
+      lista->vet[indice_ultimo].prox = indice_atual;
+      lista->dispo = indice_atual;
+    }
+    else
+    {
+      lista->dispo = indice_atual;
+      lista->vet[indice_anterior].prox = lista->vet[indice_atual].prox;
+      lista->vet[indice_atual].prox = lista->vet[indice_ultimo].prox;
+      lista->vet[indice_ultimo].prox = indice_atual;
+    }
+
+    lista->qtde--;
   }
 }
 
@@ -248,18 +232,60 @@ int tamanho (const TLista* lista)
   return lista->qtde;
 }
 
-
 int acessar(TLista* lista, int pos, char *x)
 {
+  int indice_atual    = lista->prim;
+  int indice_anterior = -1;
 
+  if (esta_vazia(lista))
+    return 0;
+  else
+  {
+    if (pos > lista->qtde || pos < 0)
+      return 0;
+    
+    int i = 1;
+
+    while (pos > i++)
+    {
+      indice_anterior = indice_atual;
+      indice_atual    = lista->vet[indice_atual].prox;
+    }
+    
+    *x = lista->vet[indice_atual].info;
+    
+    return 1;
+  }
 }
 
 int devolver(TLista* lista, int *pos, char x)
 {
+  int indice_atual    = lista->prim;
+  int indice_anterior = -1;
+  
+  if (esta_vazia(lista))
+    return 0;
+  else
+  {
+    int i = 1;
+    while (indice_atual != -1)
+    {
+      if (lista->vet[indice_atual].info == x)
+      {
+        *pos = i;  
+        return 1;
+      }
+      indice_anterior = indice_atual;
+      indice_atual    = lista->vet[indice_atual].prox;
+      i++;
+    }
 
+    return 0;
+  }
 }
 
 void destroi(TLista* lista)
 {
-
+  free(lista->vet);
+  free(lista);
 }

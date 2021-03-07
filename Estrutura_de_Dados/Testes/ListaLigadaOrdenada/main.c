@@ -86,10 +86,9 @@ void app(int op)
                 fprintf(stderr, "Erro: lista cheia ou \"pos\" fora do escopo do tamanho da lista\n");
                 break;
             }
-            
+
             debug_lista(lista);
 
-            printf("A lista de %d elementos e:\n", tamanho(lista));
             imprimir(lista);
             printf("\n");
             
@@ -104,6 +103,7 @@ void app(int op)
                 break;
             }
 
+            debug_lista(lista);
             break;
 
         case 4:
@@ -115,42 +115,39 @@ void app(int op)
             break;
 
         case 5:
-            printf("Digite uma caractere:\n");
-            scanf("%c", &c);
+            printf("Digite uma posicao:\n");
+            scanf("%d", &pos); getchar();
 
-            if (pos < tamanho(lista))
-            {
-                if(!acessar(lista, pos, &c))
-                    printf("Erro: lista vazia.\n");
-                
-                printf("\n O elemento e >> %c.\n", c);
-            }
+            if(!acessar(lista, pos, &c))
+                printf("Erro: nao e possivel acessar essa posicao.\n");
             else
-                printf("Erro: pos fora de escopo.\n");
-            
+                printf("\n O elemento e >> %c.\n", c);
+           
             break;
 
         case 6:
             printf("Digite um caractere a ser buscado>> ");
             scanf("%c", &c); getchar();
 
-            if (esta_vazia(lista))
-            {
-                if (devolver(lista, &pos, c))
-                    printf("Caracte \"%c\" encontrado na posicao %d.\n", c, pos);
-                else
-                    printf("Caractere nao encontrado.\n");        
-            }
+            if (devolver(lista, &pos, c))
+                printf("Caracte \"%c\" encontrado na posicao %d.\n", c, pos);
             else
-                printf("Erro: A lista esta vazia.\n");
+                printf("Caractere nao encontrado.\n");        
+
             break;
 
         case 7:
-            printf("A lista e:\n");
-            imprimir(lista);
-            printf("\n");
+            if (esta_vazia(lista))
+                printf("Erro: Listavazia\n");
+            else
+            {
+                printf("A lista e:\n");
+                imprimir(lista);
+                printf("\n");
+            }
             break;
         case 8:
+            destroi(lista);
             break;
 
     }
