@@ -1,72 +1,214 @@
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "ListaDinOrdDupEnc.h"
 
-int busca_lista(LISTA L, char nome[], point* endereco)
-{
-    *endereco = NULL;
+typedef tipoElem *tipoPonteiro;
 
-    if (esta_vazia(L))
-        return 0;
+void criaLista(tipoLista *l)
+{   int i;
+
+    l->quant = 0;
+    l->lista_pri = NULL;
+    l->lista_ult = NULL;
+}
+
+int listaCheia(tipoLista l)
+{
+    return (0);
+}
+
+int listaVazia(tipoLista l)
+{
+    return (l.quant==0);   /* return (l.lista_pri==NULL) ou (l.lista_ult==NULL); */
+}
+
+int quantLista(tipoLista l)
+{
+    return (l.quant);
+}
+
+int buscaLista(tipoLista l, char nome[], tipoPonteiro *ender)
+{   int tem_mais;
+
+    (*ender)=NULL;
+
+    if (listaVazia(l))
+        return (0);
+    else
+    {   (*ender)=l.lista_pri;
+
+        tem_mais=(*ender)->prox!=NULL;
+
+        while ((strcmp((*ender)->dado.nome,nome) < 0)&&
+               (tem_mais))
+        {
+            (*ender)=(*ender)->prox;
+            tem_mais=(*ender)->prox!=NULL;
+        }
+
+        if (strcmp((*ender)->dado.nome,nome)==0)
+            return (1);
+        else  return (0);
+    }
+
+}
+
+int insereLista(tipoLista *l, tipoDado dado)
+{   tipoPonteiro ender, aux, ant;
+
+    if (listaCheia(*l))
+        return (0);
     else
     {
-        int tem_mais;
-
-        endereco = L.lista_primeira;
-        tem_mais = (*endereco->prox != NULL);
-
-        while (strcmp((*ender)->dado.nome, nome)  < 0 && tem_mais)
+        if (buscaLista(*l, dado.nome, &ender))
+            return (0);
+        else
         {
-            /* code */
+            aux = malloc(sizeof(tipoElem));
+            aux->dado=dado;
+
+            if (ender==NULL)
+            {
+                /* primeira insercao */
+
+                aux->ant=NULL;
+                aux->prox=NULL;
+                l->lista_pri=aux;
+                l->lista_ult=aux;
+
+            }
+            else
+            {
+             if (strcmp(ender->dado.nome,dado.nome)==-1)
+             {
+                /* inserir no final da lista, apos o ultimo (apontado por ender) */
+
+                ender->prox=aux;
+                aux->ant=ender;
+                aux->prox=NULL;
+                l->lista_ult=aux;
+             }
+             else
+             {
+                ant=ender->ant; /* pode ser NULL */
+                ender->ant=aux;
+                aux->prox=ender;
+                aux->ant=ant;
+
+                if (ant!=NULL)
+                    ant->prox=aux;
+                else l->lista_pri=aux;
+             }
+            }
+
+            l->quant++;
+            return (1);
         }
-        
     }
+}
+
+int consultaPorNome(tipoLista l, tipoDado *dado)
+{   tipoPonteiro ender;
+
+    if (listaVazia(l))
+        return (0);
+    else
+    {
+       if (buscaLista(l, dado->nome, &ender))
+       {
+           *dado=ender->dado;
+           return (1);
+       }
+       else return (0);
+    }
+}
+
+int consultaPorPosicao(tipoLista l, int pos, tipoDado *dado)
+{   int count;
+    tipoPonteiro ender;
+
+    if (listaVazia(l)||(pos>l.quant))
+        return (0);
+    else
+    {
+        count=1;
+        ender=l.lista_pri;
+        while (count<pos)
+        {
+            count++;
+            ender=ender->prox;
+        }
+
+        *dado=ender->dado;
+        return (1);
+    }
+
+}
+
+int removeLista(tipoLista *l, tipoDado *dado)
+{   tipoPonteiro ender, ant, prox;
+
+    if (listaVazia(*l))
+        return (0);
+    else
+    {
+       if (buscaLista(*l, dado->nome, &ender))
+       {
+           ant = ender->ant;
+           prox = ender->prox;
+           *dado=ender->dado;
+
+           if (ant==NULL)
+           {
+               if (prox==NULL)
+               {
+                   /* elemento unico que sera removido */
+                   l->lista_pri=NULL;
+                   l->lista_ult=NULL;
+               }
+               else
+               {
+                   prox->ant=NULL;
+                   l->lista_pri=prox;
+               }
+           }
+           else
+           {
+               if (prox==NULL)
+               {
+                   ant->prox=NULL;
+                   l->lista_ult=ant;
+               }
+               else
+               {
+                   ant->prox=prox;
+                   prox->ant=ant;
+               }
+           }
+
+           free(ender);
+           l->quant--;
+           return (1);
+       }
+       else return (0);
+    }
+}
+
+int atualizaNomeLista(tipoLista* l, char nomeAnterior[], char nomeNovo[])
+{
+	if (listaVazia(*l))
+        return 0;
+
+    tipoDado aux;
     
-}
+    strcpy(aux.nome, nomeAnterior);
 
-void criaListaOrd(LISTA* L)
-{
-    L->quant = 0;
-    L->lista_primeira = NULL;
-    L->lista_ultimo   = NULL;
+    removeLista(l, &aux);
 
-}
+    strcpy(aux.nome, nomeNovo);
 
-int esta_cheia(LISTA L)
-{
-    return 0;
-}
+    insereLista(l, aux);
 
-int esta_vazia(LISTA L)
-{
-    return L.quant == 0;
-}
-
-int quantidade(LISTA L)
-{
-
-}
-
-int consulta_por_Nome(LISTA L, DADO* dado)
-{
-
-}
-
-int consulta_por_Pos(LISTA L, int pos, DADO* dado)
-{
-
-}
-
-int insere_Lista(LISTA* L, DADO dado)
-{
-
-}
-
-int remove_Lista(LISTA* L, DADO* dado)
-{
-
-}
-
-int atualizar(LISTA* L, DADO dado_atual)
-{
-
+    return 1;
 }

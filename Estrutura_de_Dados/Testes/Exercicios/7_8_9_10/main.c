@@ -65,10 +65,14 @@ int main()
     
     mostraFila(fila);
 
-    // removeMenorfila(&fila, &aux);
-
-    ordenafila(&fila);
-
+    removeMenorfila(&fila, &aux);
+    mostraFila(fila);
+    removeMenorfila(&fila, &aux);
+    mostraFila(fila);
+    removeMenorfila(&fila, &aux);
+    mostraFila(fila);
+    // ordenafila(&fila);
+    removeMenorfila(&fila, &aux);
     mostraFila(fila);
     // printf("\n\n");
     // mostraFila(fila);

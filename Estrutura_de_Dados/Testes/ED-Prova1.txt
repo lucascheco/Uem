@@ -1,0 +1,338 @@
+/*
+Algoritmos e Estruturas de Dados � Ano 2020
+Prof. Ronaldo
+Prova 1 - 13/03/2021 � das 13:30 as 17:30
+
+Orientacoes Preliminares:
+ 
+- Responda sua prova diretamente neste arquivo. 
+
+- Preencha seu nome, RA e curso antes de iniciar a prova.
+
+- Salve-o frequentemente para evitar perdas.
+
+- Quando terminar, envie-o na plataforma Moodle. Se preferir, pode enviar varias atualizacoes, sempre que resolver uma nova questao.
+
+- As respostas de implementacao devem ser feitas em linguagem C, formatadas e alinhadas adequadamente. Desloque os comandos mais internos mais para a direita e alinhe as chaves correspondentes ao comando que pertencem, como o modelo a seguir:
+
+		for (...)
+		{
+		    if (...)
+		    {
+			printf(...);
+			gets(...);
+			while (...)
+			{
+			    strcmp(...);
+			    a[i]=a[i+1];
+			}
+		    }
+		    scanf(...);
+		    x=soma(...);
+		}
+
+- use nomes de variaveis adequadas a sua finalidade, por exemplo, "soma", "nome", "idade" etc. e nao use nomes que nada significam, tipo "w_p3", "xyz", "pa_daqui" etc. 
+
+- nao declare e nem use variaveis auxiliares/secundarias desnecessarias, que nao causam efeito relevante no programa.
+
+ALERTA: Nao obtenha respostas com colegas, pois todos aqueles que tiverem respostas iguais, semelhantes, parecidas ou sintaticamente equivalentes, serao convocados para prestar esclarecimentos sobre o entendimento da prova e poderao ter sua prova reduzida em 50% do valor ou ate mesmo anulada.
+
+Boa Prova!
+*/
+/*
+=======================================================================
+Nome do Aluno: Lucas Matheus Silva Pacheco
+RA: 112686
+Curso: Ciencia da computação.
+=======================================================================
+
+Questao 1 (valor 2,5): Use os tipos e funcoes de manipulacao da Estrutura de Pilha Estatica que foi desenvolvida em aula ao vivo e que esta disponivel 
+					  na plataforma Moodle e implemente a seguinte funcao:
+
+int removeMenorPilha(tipoPilha *p, int *d)
+{
+    ...
+}
+
+para remover da pilha o dado com o menor valor inteiro. O dado devera ser devolvido no parametro *d. O sucesso da operacao (verdadeiro ou falso) devera ser retornado no nome da funcao. Apos a execucao da funcao, a pilha devera permanecer com todos os elementos, exceto aquele que foi removido, na mesma disposicao original. A implementacao desta funcao nao devera manipular/acessar diretamente o campo prox da estrutura interna da pilha. A pilha somente podera ser manipulada por meio das funcoes de manipulacao de pilha mencionadas. Voce pode consultar as implementacoes disponiveis na plataforma Moodle.
+
+=======================================================================
+Resposta da Questao 1: Insira sua resposta aqui, entre as linhas tracejadas:
+*/
+int tem_um(PILHA pilha)
+{
+    return pilha.topo == 0;
+}
+
+int removeMenorPilha(PILHA* pilha, DADO* dado)
+{
+    if (pilhaVazia(*pilha))
+        return 0;
+
+    PILHA  pilha_aux;
+    DADO   dado_aux;
+    DADO   menorDado;
+
+    criaPilha(&pilha_aux);
+
+    int topo = topoPilha(*pilha);
+
+    menorDado = pilha->pilha[topo];
+
+    if (tem_um(*pilha))
+    {
+        desempilha(pilha, &dado_aux);
+        *dado = dado_aux;
+        return 1;
+    }
+
+    while (!pilhaVazia(*pilha))
+    {
+        desempilha(pilha, &dado_aux);
+
+        if (strcmp(dado_aux.nome, menorDado.nome) < 0)
+            menorDado = dado_aux;
+        
+        empilha(&pilha_aux, dado_aux);
+    }
+
+    while (!pilhaVazia(pilha_aux))
+    {
+        desempilha(&pilha_aux, &dado_aux);
+
+        if (strcmp(dado_aux.nome, menorDado.nome) == 0)
+            continue;
+        
+        empilha(pilha, dado_aux);
+    }
+
+    *dado = menorDado;
+    
+    return 1;
+}
+/*
+
+=======================================================================
+
+Questao 2 (valor 2,5): Use os tipos e funcoes de manipulacao de fila a seguir definidos:
+
+	#define maxFila 100
+	#define maxNome 100
+
+	typedef struct tipoDado
+	{
+	    char nome[maxNome];
+	    int idade, rg;
+	} tipoDado;
+
+	typedef struct tipoFila
+	{
+    		tipoDado fila[maxFila];
+    		int primeiro, ultimo, quant;
+	} tipoFila;
+
+	void criaFila(tipoFila *f);
+
+	int filaVazia(tipoFila f);
+
+	int filaCheia(tipoFila f);
+
+	int primeiroFila(tipoFila f, tipoDado *dado);
+
+	int enfileira(tipoFila *f, tipoDado dado);
+
+	int desenfileira(tipoFila *f, tipoDado *dado);
+
+
+e implemente a seguinte funcao:
+
+int removeFilaPorNome(tipoFila *f, char nome[],  tipoDado *d)
+{
+    ...
+}
+
+para remover da fila o dado com o nome passado no parametro nome[], 
+caso exista. O dado completo devera ser devolvido no parametro *d. 
+O sucesso da operacao (verdadeiro ou falso) devera ser retornado no nome da funcao.
+Apos a execucao da funcao, a fila devera permanecer com todos os elementos,
+exceto aquele que foi removido, na mesma disposicao original. 
+A implementacao desta funcao nao devera manipular/acessar diretamente o campo prox da estrutura interna da fila. 
+A fila somente podera ser manipulada por meio das funcoes de manipulacao de fila relacionadas acima.
+
+=======================================================================
+Resposta da Questao 2: Insira sua resposta aqui, entre as linhas tracejadas:
+*/
+int removeFilaNome(FILA* fila, char nome[], DADO* dado)
+{
+    if (filaVazia(*fila))
+        return 0;
+
+    FILA fila_aux;
+    DADO dado_aux;
+
+    criaFila(&fila_aux);
+
+    while (desenfileira(fila, &dado_aux))
+    {
+        if (!strcmp(dado_aux.nome, nome))
+        {
+            *dado = dado_aux;
+            continue;
+        }
+
+        enfileira(&fila_aux, dado_aux);
+    }
+
+    *fila = fila_aux;
+
+    return 1;
+}
+/*
+=======================================================================
+
+Questao 3 (valor 2,5): Considere a estrutura Lista Estatica Ordenada Encadeada implementada 
+em aula ao vivo e cuja codifica��o est� dispon�vel na plataforma Moodle. 
+Acesse a plataforma, obtenha os arquivos de codificacao e altere os tipos 
+"tipoElem" e "tipoLista", bem como as fun��es "criaLista()", "buscaLista()" e "insereLista()", 
+de forma que a lista passe a trabalhar com encadeamento duplo (Lista Estatica Ordenada Duplamente Encadeada).
+No encadeamento duplo, cada elemento da lista aponta para o seu anterior e para o seu proximo. 
+Considere que esta estrutura mantem o controle do primeiro elemento e do ultimo elemento do encadeamento. 
+Mostre como resposta apenas os tipos e funcoes solicitados.
+
+=======================================================================
+Resposta da Questao 3: Insira sua resposta aqui, entre as linhas tracejadas:
+*/
+typedef struct tipoElem
+{
+  char info;
+  int prox;
+  int ante;
+} ELEM;
+
+typedef struct Lista
+{
+  struct tipoElem* vet;
+  int prim; 
+  int dispo; 
+  int qtde; 
+
+} tipoLista;
+
+void criaLista(tipoLista* lista)
+{
+  for(int i = 0; i < MAXVET; i++)
+  {
+    lista->vet[i].prox = i + 1;
+	lista->vet[i].prox = i - 1;
+  }
+
+  lista->vet[MAXVET - 1].prox = -1;
+
+  lista->qtde = 0; 
+  lista->dispo = 0; 
+  lista->prim = -1; 
+}
+
+int busca_indice(tipoLista lista, char x, int* indice_atual, int* indice_anterior)
+{
+  *indice_atual    = lista.prim;
+  *indice_anterior = -1;
+  
+  if (listaVazia(&lista))
+    return 0;
+  else
+  {
+    while (*indice_atual != -1)
+    {
+      if (lista.vet[*indice_atual].info == x)
+        return 1;
+
+      *indice_anterior = *indice_atual;
+      *indice_atual    = lista.vet[*indice_atual].prox;
+    }
+
+    return 0;
+  }
+}
+
+int inserir(tipoLista* lista, char x)
+{
+  if (esta_cheia(lista))
+    return 0;
+  else
+  {
+    int indice_anterior, indice_atual, indice_ultimo;
+
+    /* Atribuimos valores para todos indices acima. */
+    indice_atual = lista->dispo;
+    busca_indice_anterior_a_insercao(*lista, x, &indice_anterior);
+    busca_indice_ultimo(*lista, &indice_ultimo);
+    
+    if (esta_vazia(lista))
+    {
+      lista->vet[indice_atual].info = x;
+
+      lista->prim = lista->dispo;
+      lista->dispo = lista->vet[indice_atual].prox;
+    }
+    else 
+    {
+      lista->vet[indice_atual].info = x;
+
+      if (indice_anterior == -1)
+        lista->prim = lista->dispo;
+      
+      lista->dispo = lista->vet[indice_atual].prox;
+
+      lista->vet[indice_ultimo].prox = lista->vet[indice_atual].prox;
+      lista->vet[indice_atual].prox = lista->vet[indice_anterior].prox;
+      lista->vet[indice_anterior].prox = indice_atual;
+    }
+
+    lista->qtde++;
+    
+    return 1;
+  }
+}
+
+/*
+=======================================================================	
+
+Questao 4 (valor 2,5): Considere a estrutura de Lista Dinamica Ordenada Duplamente Encadeada implementada em aula ao vivo 
+e cuja codificacao esta disponivel na plataforma Moodle. Ent�o, adicione nesta estrutura mais a funcao:
+
+int atualizaNomeLista(tipoLista *l, char nomeAnterior[], char nomeNovo[])� 
+
+para atualizar o campo de nome de um dado da lista, conforme os parametros passados. 
+Observe que a mudanca de nome pode causar um reposicionamento do registro na ordenacao da lista.
+ O sucesso da operacao (verdadeiro ou falso) dever a ser retornado no nome da funcao. 
+ A funcao devera ser adicionada a estrutura da lista e sua implementacao podera ser feita manipulando 
+ diretamente a estrutura interna de implementacao ou usando as fun��es disponiveis da respectiva lista.
+  Voce pode consultar as implementacoes disponiveis na plataforma Moodle.
+
+=======================================================================
+Resposta da Questao 4: Insira sua resposta aqui, entre as linhas tracejadas:
+*/
+int atualizaNomeLista(tipoLista* l, char nomeAnterior[], char nomeNovo[])
+{
+	if (listaVazia(*l))
+        return 0;
+
+    tipoDado aux;
+    
+    strcpy(aux.nome, nomeAnterior);
+
+    removeLista(l, &aux);
+
+    strcpy(aux.nome, nomeNovo);
+
+    insereLista(l, aux);
+
+    return 1;
+}
+
+/*
+=======================================================================	
+
+Boa Prova!
+*/

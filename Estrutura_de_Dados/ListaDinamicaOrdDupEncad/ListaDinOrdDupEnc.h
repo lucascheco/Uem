@@ -1,52 +1,53 @@
-#define MAXNOME 45
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define maxNome 75
+
 
 typedef struct tipoDN
 {
     int dia, mes, ano;
-} 
-DN;
+} tipoDN;
 
-typedef struct dado
+typedef struct tipoDado
 {
-    char nome[MAXNOME];
-    DN dnasc;
+    char nome[maxNome];
+    tipoDN dnasc;
     int rg;
-    char genero;
-}
-DADO;
+} tipoDado;
 
-typedef struct elem
+typedef struct tipoElem
 {
-    DADO dado;
-    struct elem* prox;
-    struct elem* ant;
-}
-ELEM;
+    tipoDado dado;
+    struct tipoElem *prox;
+    struct tipoElem *ant;
+} tipoElem;
 
-typedef ELEM *point;
+typedef tipoElem *tipoPonteiro;
 
-typedef struct lista
+typedef struct tipoLista
 {
-    point lista_primeira, lista_ultimo;
+    tipoPonteiro lista_pri, lista_ult;
     int quant;
 
-}
-LISTA;
+} tipoLista;
 
-void criaListaOrd(LISTA* L);
+void criaLista(tipoLista *l);
 
-int esta_cheia(LISTA L);
+int listaCheia(tipoLista l);
 
-int esta_vazia(LISTA L);
+int listaVazia(tipoLista l);
 
-int quantidade(LISTA L);
+int quantLista(tipoLista l);
 
-int consulta_por_Nome(LISTA L, DADO* dado);
+int insereLista(tipoLista *l, tipoDado dado);
 
-int consulta_por_Pos(LISTA L, int pos, DADO* dado);
+int consultaPorNome(tipoLista l, tipoDado *dado);
 
-int insere_Lista(LISTA* L, DADO dado);
+int consultaPorPosicao(tipoLista l, int pos, tipoDado *dado);
 
-int remove_Lista(LISTA* L, DADO* dado);
+int removeLista(tipoLista *l, tipoDado *dado);
 
-int atualizar(LISTA* L, DADO dado_atual);
+int atualizaNomeLista(tipoLista* l, char nomeAnterior[], char nomeNovo[]);

@@ -1,5 +1,7 @@
 {
     "files.associations": {
-        "listaestligadaordenada.h": "c"
+        "listaestligadaordenada.h": "c",
+        "listadinorddupenc.h": "c",
+        "listadinduplamenteencadeada.h": "c"
     }
 }

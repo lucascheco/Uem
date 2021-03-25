@@ -27,3 +27,5 @@ int topoPilha(PILHA pilha);
 int empilha(PILHA* pilha, DADO dado);
 
 int desempilha(PILHA* pilha, DADO* dado);
+
+int removeMenorPilha(PILHA* pilha, DADO* dado);

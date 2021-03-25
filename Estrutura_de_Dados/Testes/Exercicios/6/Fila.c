@@ -59,3 +59,29 @@ int desenfileira(FILA* fila, DADO* dado)
 
     return 1;
 }
+
+int removeFila(FILA* fila, char nome[], DADO* dado)
+{
+    if (filaVazia(*fila))
+        return 0;
+
+    FILA fila_aux;
+    DADO dado_aux;
+
+    criaFila(&fila_aux);
+
+    while (desenfileira(fila, &dado_aux))
+    {
+        if (!strcmp(dado_aux.nome, nome))
+        {
+            *dado = dado_aux;
+            continue;
+        }
+
+        enfileira(&fila_aux, dado_aux);
+    }
+
+    *fila = fila_aux;
+
+    return 1;
+}
