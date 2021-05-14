@@ -2,6 +2,10 @@
     "files.associations": {
         "listaestligadaordenada.h": "c",
         "listadinorddupenc.h": "c",
-        "listadinduplamenteencadeada.h": "c"
+        "listadinduplamenteencadeada.h": "c",
+        "pilha.h": "c",
+        "pilhadinamica.h": "c",
+        "arvorebinaria.h": "c",
+        "fila.h": "c"
     }
 }

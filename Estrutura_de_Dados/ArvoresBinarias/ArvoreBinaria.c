@@ -248,12 +248,11 @@ int remove_ABB(ARVORE* A, DADO* dado)
                 else
                     proximo->dado = maiorDosMenores(&(proximo->esq));
             
-
             i++;
 
             A->quant--;
             return 1;
-        }
+        }  
     }
 
     return 0;
