@@ -20,7 +20,16 @@ clean:
 	rm ./*.o
 	clear
 
+cleanExe:
+	rm $(SCRIPT2)
+	clear
+
 cleanAll:
 	rm ./*.o
 	rm $(SCRIPT2)
 	clear
+
+run:
+	make
+	make clean
+	./$(SCRIPT2)

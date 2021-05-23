@@ -5,20 +5,30 @@
 ************************************************************************************/
 
 
-#define MAXVET 10000000
+#define MAXVET 1000000
 
 typedef int vetor[MAXVET];
 
 typedef struct desempenho
 {
     long int tempo;
-    double nCompara,nOpera;
+    long int nCompara,nOpera;
 } Desempenho;
 
-void geraVetor(vetor V, int tam);
+void geraVetor(vetor V, int tam, int intervalo);
 
 void mostraVetor(vetor V, int tam, char *mensagem);
 
+#define MAXBUCKETS 10
+
+typedef struct bucket
+{
+    vetor local;
+    int pos;
+    int tam;
+} BUCKET;
+
+typedef BUCKET vetorBuckets[MAXBUCKETS];
 
 Desempenho selectionSort(vetor V, int tam);
 
@@ -34,7 +44,7 @@ Desempenho heapSort     (vetor V, int tam);
 
 Desempenho quickSort    (vetor V, int tam);
 
-Desempenho countingSort (vetor V, int tam);
+Desempenho countingSort (vetor V, int tam, int intervalo);
 
 Desempenho bucketSort   (vetor V, int tam);
 
