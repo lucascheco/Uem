@@ -412,7 +412,8 @@ void countingSort(vetor V, int tam, int intervalo)
 
 /*--------------------------------------------------------*/
 /* Funções privadas para o BucketSort */
-int detectaBucket(vetorBuckets bucket, int nBuckets, int intervIni, int intervFim, int elem)
+int detectaBucket(vetorBuckets bucket, int nBuckets, int intervIni, 
+                    int intervFim, int elem)
 {
     int interv_Geral, tam_Interv_Bucket, nb;
 
@@ -425,7 +426,8 @@ int detectaBucket(vetorBuckets bucket, int nBuckets, int intervIni, int intervFi
     return nb;
 }
 
-void distribuiBucket(vetor V, int tam, vetorBuckets bucket, int nBuckets, int intervIni, int intervFim)
+void distribuiBucket(vetor V, int tam, vetorBuckets bucket, int nBuckets, 
+                        int intervIni, int intervFim)
 {
     int i, nb;
 
@@ -440,41 +442,131 @@ void distribuiBucket(vetor V, int tam, vetorBuckets bucket, int nBuckets, int in
     }
 }
 
-void ordenaBucket(vetor V, int tam, vetorBuckets bucket, int nBuckets, int intervalo)
+void ordenaBucket(vetor V, int tam, vetorBuckets bucket, int nBuckets)
 {
     int i, j, nb, pos = 0;
 
-    for (i = 0; i < nb; ++i)
+    for (i = 0; i < nBuckets; ++i)
     {
-       mergeSort(bucket[i].local, bucket[i].tam);
+        mergeSort(bucket[i].local, bucket[i].tam);
 
-      for (j = 0; j < bucket[i].tam; ++j)
-          V[pos++] = bucket[i].local[j];
-    
+        for (j = 0; j < bucket[i].tam; ++j)
+        {
+            V[pos] = bucket[i].local[j];
+            pos++;
+        }
     }
 }
 
-void _bucketSort(vetor V, int tam, int intervalo)
-{
-    int i, j, nBuckets, pos;
-    
+
     vetorBuckets VB;
+void _bucketSort(vetor V, int tam)
+{
+    int i, j, pos, menor, maior, nBuckets = 10;
+
+    maior = menor = V[0];
     
-    distribuiBucket(V, tam, VB, 10, 0, intervalo);
+    for (i = 1; i < tam; i++)
+    {
+        if (V[i] > maior)
+            maior = V[i];
 
-    ordenaBucket(V, tam, VB, 10, intervalo);
+        if (V[i] < menor)
+            menor = V[i];
+    }
 
+    distribuiBucket(V, tam, VB, nBuckets, menor, maior);
+
+    ordenaBucket(V, tam, VB, nBuckets);
 }
 
 /*--------------------------------------------------------*/
-void bucketSort(vetor V, int tam, int intervalo)
+void bucketSort(vetor V, int tam)
 {
-    _bucketSort(V, tam, intervalo);
+    _bucketSort(V, tam);
 }
 
+/*--------------------------------------------------------*/
+/* Funções privadas para o RadixSort */
+int pegaDigito(int N, int posDig)
+{
+    int i, dig = 0;
+
+    for (i = 0; i <= posDig; i++)
+    {
+        dig = N % 10;
+        N = N / 10;
+    }
+
+    return dig;
+}
+
+int calcQuantDig(int num)
+{
+    int quant = 0;
+
+    do
+    {
+        num /= 10;
+        quant++;
+    } while (num != 0);
+
+    return quant;
+}
+
+void registraContagem2(vetor V, int tam, int intervalo, int *C, int posDig)
+{
+    int i;
+
+    for (i = 0; i < tam; i++)
+        C[pegaDigito(V[i], posDig)]++;
+    
+    for (i = 1; i < intervalo; i++)
+        C[i] += C[i - 1];
+    
+}
+
+void transfereVetor2(vetor V, int tam, int *C, int posDig)
+{
+    vetor R;
+    int i;
+    
+    for (i = tam - 1; i > -1; i--)
+        R[--C[pegaDigito(V[i], posDig)]] = V[i];
+
+    copiaVetor(tam, R, V); 
+}
+
+void countingSort2(vetor V, int tam, int posDig)
+{
+    int *C;
+    C = (int *)calloc(10, sizeof(int));
+
+    registraContagem2(V, tam, 10, C, posDig);
+                    
+    transfereVetor2(V, tam, C, posDig);
+
+    free(C);
+}
+
+/*--------------------------------------------------------*/
 void radixSort(vetor V, int tam)
 {
+    int digito, quantDig, posDig, maxNum;
+    vetor C, R;
 
+    maxNum = V[0];
+    
+    for (int i = 1; i < tam; i++)
+        if (V[i] > maxNum)
+            maxNum = V[i];
+
+    quantDig = calcQuantDig(maxNum);
+
+    for (posDig = 0; posDig < quantDig; posDig++)
+    {
+        countingSort2(V, tam, posDig);
+    }
 }
 
 

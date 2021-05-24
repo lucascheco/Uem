@@ -41,9 +41,9 @@ void heapSort     (vetor V, int tam);
 
 void quickSort    (vetor V, int tam);
 
-void countingSort (vetor V, int tam);
+void countingSort (vetor V, int tam, int intervalo);
 
-void bucketSort   (vetor V, int tam, int intervalo);
+void bucketSort   (vetor V, int tam);
 
 void radixSort    (vetor V, int tam);
 

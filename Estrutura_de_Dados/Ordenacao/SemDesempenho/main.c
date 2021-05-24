@@ -69,7 +69,7 @@ void option(int op)
             break;
 
         case 3:
-            bubbleShellSort(V, tam);
+            bubbleSort(V, tam);
             mostraVetor(V, tam, "bubbleShellSort\n");
             printf("\n\n\n");
             break;
@@ -103,13 +103,13 @@ void option(int op)
             break;
 
         case 8:
-            countingSort(V, tam);
+            countingSort(V, tam, intervalo);
             mostraVetor(V, tam, "Counting Sort\n");
             printf("\n\n\n");
             break;
 
         case 9:
-            bucketSort(V, tam, intervalo);
+            bucketSort(V, tam);
             mostraVetor(V, tam, "Bucket Sort\n");
             printf("\n\n\n");
             break;
