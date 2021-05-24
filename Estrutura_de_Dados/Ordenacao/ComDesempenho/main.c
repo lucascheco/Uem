@@ -12,6 +12,7 @@ vetor V;
 
 void clean_screen();
 void mostraDesempenho(Desempenho RD);
+void todos(vetor V, int tam, int intervalo);
 
 int menu()
 {   
@@ -32,7 +33,8 @@ int menu()
     printf("8  - Counting Sort\n");
     printf("9  - Bucket Sort\n");
     printf("10 - Radix Sort\n");
-    printf("11 - Sair\n");
+    printf("11 - Todos Desempenhos\n");
+    printf("12 - Sair\n");
     printf("> ");
     
     scanf("%d", &op);
@@ -46,7 +48,7 @@ void option(int op)
     int tam, intervalo;
     Desempenho RD;
 
-    if (op != 11)
+    if (op != 12)
     {
         printf("Digite o tamanho do vetor: ");
         scanf("%d", &tam); getchar();
@@ -133,7 +135,10 @@ void option(int op)
             break;
 
         case 11:
-
+            todos(V, tam, intervalo);
+            break;
+        
+        case 12:
             break;
     
         }  
@@ -146,7 +151,7 @@ int main()
 
     do
         option(op = menu());
-    while (op != 11);
+    while (op != 12);
 
     return 0;
 }
@@ -167,4 +172,72 @@ void mostraDesempenho(Desempenho RD)
     printf("%ld comparacoes, ", RD.nCompara);
     printf("%ld operacoes, ", RD.nOpera);
     printf("Total = %ld.\n", RD.nOpera + RD.nCompara);
+}
+
+void todos(vetor V, int tam, int intervalo)
+{
+    Desempenho RD;
+    vetor AUX;
+
+    copiaVetor(tam, V, AUX);
+
+
+    RD = selectionSort(V, tam);
+    printf("Selection Sort>\n");
+    mostraDesempenho(RD);
+    copiaVetor(tam, AUX, V);
+
+
+    RD = insertionSort(V, tam);
+    printf("Insertion Sort>\n");
+    mostraDesempenho(RD);
+    copiaVetor(tam, AUX, V);
+
+
+    RD = bubbleSort(V, tam);
+    printf("Bubble Sort>\n");
+    mostraDesempenho(RD);
+    copiaVetor(tam, AUX, V);
+
+
+    RD = shellSort(V, tam);
+    printf("Shell Sort>\n");
+    mostraDesempenho(RD);
+    copiaVetor(tam, AUX, V);
+
+
+    RD = mergeSort(V, tam);
+    printf("Merge Sort>\n");
+    mostraDesempenho(RD);
+    copiaVetor(tam, AUX, V);
+
+
+    RD = heapSort(V, tam);
+    printf("Heap Sort>\n");
+    mostraDesempenho(RD);
+    copiaVetor(tam, AUX, V);
+
+
+    RD = quickSort(V, tam);
+    printf("Quick Sort>\n");
+    mostraDesempenho(RD);
+    copiaVetor(tam, AUX, V);
+
+
+    RD = countingSort(V, tam, intervalo);
+    printf("Counting Sort>\n");
+    mostraDesempenho(RD);
+    copiaVetor(tam, AUX, V);
+
+
+    RD = bucketSort(V, tam);
+    printf("Bucket Sort>\n");
+    mostraDesempenho(RD);
+    copiaVetor(tam, AUX, V);
+
+
+    RD = radixSort(V, tam);
+    printf("Radix Sort>\n");
+    mostraDesempenho(RD);
+    copiaVetor(tam, AUX, V);
 }

@@ -91,7 +91,7 @@ Desempenho selectionSort(vetor V, int tam)
                     nOper += 2;
                 }
 
-                nOper++;
+                nOper += 2;
                 nComp += 2;
             }
 
@@ -585,6 +585,7 @@ Desempenho _quickSort(vetor V, int ini, int fim)
     return TD_Total;
 }
 /*--------------------------------------------------------*/
+
 Desempenho quickSort(vetor V, int tam)
 {
     long int T1, T2;
@@ -692,51 +693,392 @@ Desempenho countingSort(vetor V, int tam, int intervalo)
     return TD_Total;
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
 /*--------------------------------------------------------*/
 /* Funções privadas para o BucketSort */
-int detectaBucket(vetorBuckets bucket, int nBuckets, int intervalo_Inicial, int intervalo_Final, int elem)
+Desempenho detectaBucket(vetorBuckets bucket, int nBuckets, int intervIni, 
+                    int intervFim, int elem, int *nb)
 {
-    int intervalo_Geral, tamanho_Intervalo_Bucket, nb;
+    Desempenho TD;
+    long int nComp = 0, nOper = 0;
 
-    intervalo_Geral = intervalo_Final - intervalo_Inicial + 1;
+    int interv_Geral, tam_Interv_Bucket;
+    
+    nOper += 8;
+    interv_Geral = intervFim - intervIni + 1;
 
-    tamanho_Intervalo_Bucket = intervalo_Geral / nBuckets;
+    tam_Interv_Bucket = interv_Geral / nBuckets;
 
-    nb = (elem - intervalo_Inicial) / tamanho_Intervalo_Bucket;
+    *nb = (elem - intervIni) / tam_Interv_Bucket;
 
-    return nb;
+    TD.nOpera = nOper;
+    TD.nCompara = 0;
+    TD.tempo = 0;
+
+    return TD;
 }
+
+Desempenho distribuiBucket(vetor V, int tam, vetorBuckets bucket, int nBuckets, 
+                        int intervIni, int intervFim)
+{
+    Desempenho TD, TD_Total;
+    long int nComp = 0, nOper = 0;
+    long int T1, T2;
+    TD_Total.nCompara = 0;
+    TD_Total.nOpera   = 0;
+    TD_Total.tempo    = 0;
+
+    int i, nb;
+    
+    nComp++;
+    nOper++;
+    for (i = 0; i < nBuckets; ++i)
+    {
+        bucket[i].tam = 0; 
+    
+        nOper += 3;
+        nComp++;
+    }
+    
+    nComp++;
+    nOper++;
+    for (i = 0; i < tam; ++i) 
+    {
+        TD =  detectaBucket(bucket, nBuckets, intervIni, intervFim, V[i], &nb);
+        TD_Total = somaDesempenho(TD_Total, TD);
+
+        bucket[nb].local[bucket[nb].tam] = V[i];
+        bucket[nb].tam++;
+
+        nOper += 5;
+        nComp++;
+    }
+
+    TD_Total.nCompara += nComp;
+    TD_Total.nOpera   += nOper;
+
+    return TD_Total;
+}
+
+Desempenho ordenaBucket(vetor V, int tam, vetorBuckets bucket, int nBuckets)
+{   
+    Desempenho TD, TD_Total;
+    long int nComp = 0, nOper = 0;
+    long int T1, T2;
+    TD_Total.nCompara = 0;
+    TD_Total.nOpera   = 0;
+    TD_Total.tempo    = 0;
+
+
+    int i, j, nb, pos = 0;
+
+    nComp++;
+    nOper++;
+    for (i = 0; i < nBuckets; ++i)
+    {
+        TD = mergeSort(bucket[i].local, bucket[i].tam);
+        TD_Total = somaDesempenho(TD_Total, TD);
+
+        nComp++;
+        nOper++;
+        for (j = 0; j < bucket[i].tam; ++j)
+        {
+            V[pos] = bucket[i].local[j];
+            pos++;
+
+            nComp++;
+            nOper += 5;
+        }
+    }
+
+    TD_Total.nOpera += nOper;
+    TD_Total.nCompara += nComp;
+
+    return TD_Total;
+}
+
+vetorBuckets VB; // Segmentation fault na minha compilaçao, as vezes funciona e outras não.
+Desempenho _bucketSort(vetor V, int tam)
+{
+    Desempenho TD, TD_Total;
+    long int nComp = 0, nOper = 0;
+    long int T1, T2;
+    TD_Total.nCompara = 0;
+    TD_Total.nOpera   = 0;
+    TD_Total.tempo    = 0;
+
+
+    int i, j, pos, menor, maior, nBuckets = 10;
+
+    nOper += 2;
+    maior = menor = V[0];
+
+    nComp++;
+    nOper++;    
+    for (i = 1; i < tam; i++)
+    {
+        if (V[i] > maior)
+        {
+            maior = V[i];
+
+            nOper++;
+        }
+
+        if (V[i] < menor)
+        {
+            menor = V[i];
+
+            nOper++;
+        }
+    
+        nComp += 3;
+        nOper += 2;
+    }
+
+    TD = distribuiBucket(V, tam, VB, nBuckets, menor, maior);
+    TD_Total = somaDesempenho(TD_Total, TD);
+
+    TD = ordenaBucket(V, tam, VB, nBuckets);
+    TD_Total = somaDesempenho(TD_Total, TD);
+
+    TD_Total.nCompara += nComp;
+    TD_Total.nOpera += nOper;
+
+    return TD_Total;
+}
+
 /*--------------------------------------------------------*/
 Desempenho bucketSort(vetor V, int tam)
 {
-    long int T1, T2;
     Desempenho TD;
-    long int nComp = 0, nOper = 0;
-
+    long int T1, T2;
+    
     T1 = (long int)time(NULL);
-
+    {
+        TD = _bucketSort(V, tam);
+    }
     T2 = (long int)time(NULL);
 
     TD.tempo = T2 - T1;
-    TD.nCompara = nComp;
-    TD.nOpera = nOper;
-     
+
     return TD;
 }
 
-Desempenho radixSort(vetor V, int tam)
+/*--------------------------------------------------------*/
+/* Funções privadas para o RadixSort */
+Desempenho pegaDigito(int N, int posDig, int *dig)
 {
-    long int T1, T2;
     Desempenho TD;
     long int nComp = 0, nOper = 0;
 
-    T1 = (long int)time(NULL);
 
-    T2 = (long int)time(NULL);
+    int i;
+    nOper++;
+    *dig = 0;
 
-    TD.tempo = T2 - T1;
+    nComp++;
+    nOper++;  
+    for (i = 0; i <= posDig; i++)
+    {
+        *dig = N % 10;
+        N = N / 10;
+
+        nOper += 6;
+        nComp++;
+    }
+
     TD.nCompara = nComp;
     TD.nOpera = nOper;
-     
+    TD.tempo = 0;
+
     return TD;
+}
+
+Desempenho calcQuantDig(int num, int *quant)
+{
+    Desempenho TD;
+    long int nComp = 0, nOper = 0;
+
+    nOper++;
+    *quant = 0;
+
+    do
+    {
+        num /= 10;
+        (*quant)++;
+
+        nOper += 4;
+        nComp++;
+    } while (num != 0);
+
+    TD.nCompara = nComp;
+    TD.nOpera  = nOper;
+    TD.tempo = 0;
+
+    return TD;
+}
+
+Desempenho registraContagem2(vetor V, int tam, int intervalo, int *C, int posDig)
+{
+    Desempenho TD, TD_Total;
+    long int nComp = 0, nOper = 0;
+    long int T1, T2;
+    TD_Total.nCompara = 0;
+    TD_Total.nOpera   = 0;
+    TD_Total.tempo    = 0;
+
+    int i, dig;
+
+    nComp++;
+    nOper++;
+    for (i = 0; i < tam; i++)
+    {
+        TD = pegaDigito(V[i], posDig, &dig);
+        TD_Total = somaDesempenho(TD_Total, TD);
+
+        C[dig]++;
+
+
+        nComp++;
+        nOper += 4;
+    }
+
+    nComp++;
+    nOper++;
+    for (i = 1; i < intervalo; i++)
+    {
+        C[i] += C[i - 1];
+        
+        nComp++;
+        nOper += 5;
+    }
+
+
+    TD_Total.nCompara += nComp;
+    TD_Total.nOpera   += nOper;
+
+    return TD_Total;
+}
+
+Desempenho transfereVetor2(vetor V, int tam, int *C, int posDig)
+{
+    Desempenho TD, TD_Total;
+    long int nComp = 0, nOper = 0;
+    long int T1, T2;
+    TD_Total.nCompara = 0;
+    TD_Total.nOpera   = 0;
+    TD_Total.tempo    = 0;
+
+    vetor R;
+    int i, dig;
+
+    nComp++;
+    nOper += 2;
+    for (i = tam - 1; i > -1; i--)
+    {
+        TD = pegaDigito(V[i], posDig, &dig);
+        TD_Total = somaDesempenho(TD_Total, TD);
+
+        R[--C[dig]] = V[i];
+
+        nOper += 5;
+        nComp++;
+    }
+
+    TD = copiaVetor(tam, R, V); 
+    TD_Total = somaDesempenho(TD_Total, TD);
+
+    TD_Total.nCompara += nComp;
+    TD_Total.nOpera   += nOper;
+
+    return TD_Total;
+}
+
+Desempenho countingSort2(vetor V, int tam, int posDig)
+{
+    Desempenho TD, TD_Total;
+    long int T1, T2;
+
+    int *C;
+    C = (int *)calloc(10, sizeof(int));
+    
+    T1 = (long int)time(NULL);
+    {
+        TD = registraContagem2(V, tam, 10, C, posDig);
+        TD_Total = somaDesempenho(TD_Total, TD);
+                    
+        TD = transfereVetor2(V, tam, C, posDig);
+        TD_Total = somaDesempenho(TD_Total, TD);
+        free(C);
+    } 
+    T2 = (long int)time(NULL);
+
+    TD_Total.tempo = T2 - T1;
+
+    return TD_Total;
+}
+
+/*--------------------------------------------------------*/
+Desempenho radixSort(vetor V, int tam)
+{
+    Desempenho TD, TD_Total;
+    long int nComp = 0, nOper = 0;
+    long int T1, T2;
+    TD_Total.nCompara = 0;
+    TD_Total.nOpera   = 0;
+    TD_Total.tempo    = 0;
+
+    int digito, quantDig, posDig, maxNum;
+    vetor C, R;
+    
+    T1 = (long int)time(NULL);
+    nOper++;
+    maxNum = V[0];
+
+    nComp++;
+    nOper++;
+    for (int i = 1; i < tam; i++)
+    {
+        if (V[i] > maxNum)
+        {
+            maxNum = V[i];
+
+            nOper++;
+        }
+
+        nComp += 2;
+        nOper += 2;
+    }
+
+    TD = calcQuantDig(maxNum, &quantDig);
+    TD_Total = somaDesempenho(TD_Total, TD);   
+
+    nComp++;
+    nOper++;
+    for (posDig = 0; posDig < quantDig; posDig++)
+    {
+        TD = countingSort2(V, tam, posDig);
+        TD_Total = somaDesempenho(TD_Total, TD);
+
+        nComp++;
+        nOper += 2;
+    }
+    T2 = (long int)time(NULL);
+
+    TD_Total.tempo = T2 - T1;
+    TD_Total.nCompara += nComp;
+    TD_Total.nOpera   += nOper;
+
+    return TD_Total;
 }

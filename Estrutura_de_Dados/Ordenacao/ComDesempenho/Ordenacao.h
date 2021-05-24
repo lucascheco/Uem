@@ -19,6 +19,8 @@ void geraVetor(vetor V, int tam, int intervalo);
 
 void mostraVetor(vetor V, int tam, char *mensagem);
 
+Desempenho copiaVetor(int tam, vetor fonte, vetor destino);
+
 #define MAXBUCKETS 10
 
 typedef struct bucket
